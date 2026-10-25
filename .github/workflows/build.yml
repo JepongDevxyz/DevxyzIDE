@@ -64,8 +64,8 @@ jobs:
           java-version: ${{ env.BUILD_JAVA_VERSION }}
           distribution: ${{ env.BUILD_JAVA_DIST }}
       - name: Change Gradle wrapper permissions
-        run: chmod +x ./gradlew
-      - name: Create debug keystore
+      run: chmod +x ./gradlew
+        - name: Create debug keystore
         if: ${{ matrix.build_type == 'debug' }}
         run: |
           mikdir -p ~/.android ~/.config/.android
