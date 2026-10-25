@@ -43,8 +43,8 @@ android {
 
         buildConfigField("String", "TERMUX_PACKAGE_VARIANT", "\"" + packageVariant + "\"") // Used by TermuxApplication class
 
-        manifestPlaceholders["TERMUX_PACKAGE_NAME"] = BuildConfig.packageName
-        manifestPlaceholders["TERMUX_APP_NAME"] = "AndroidIDE"
+        manifestPlaceholders["TERMUX_PACKAGE_NAME"] = "com.jepongdevxyz.devxyzide"
+        manifestPlaceholders["TERMUX_APP_NAME"] = "DevxyzIDE"
 
         externalNativeBuild {
             ndkBuild {
