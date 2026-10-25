@@ -68,7 +68,7 @@ jobs:
       - name: Create debug keystore
         if: ${{ matrix.build_type == 'debug' }}
         run: |
-          mikdir -p ~/.android ~/.config/.android
+          mkdir -p ~/.android ~/.config/.android
           keytool -genkeypair -v -keystore ~/.android/debug.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US"
           cp ~/.android/debug.keystore ~/.config/.android/debug.keystore
           ls -lh ~/.android/debug.keystore ~/.config/.android/debug.keystore
