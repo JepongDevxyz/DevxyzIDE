@@ -339,11 +339,11 @@ public final class TermuxConstants {
      */
 
     /** Termux app name */
-    public static final String TERMUX_APP_NAME = "DevxyzIDE"; // Default: "Termux"
+    public static final String TERMUX_APP_NAME = "AndroidIDE"; // Default: "Termux"
     /** Termux package name */
-    public static final String TERMUX_PACKAGE_NAME = "com.jepongdevxyz.devxyzide"; // Default: "com.termux"
+    public static final String TERMUX_PACKAGE_NAME = "com.itsaky.androidide"; // Default: "com.termux"
     /** Termux GitHub repo name */
-    public static final String TERMUX_GITHUB_REPO_NAME = "DevxyzIDE"; // Default: "termux-app"
+    public static final String TERMUX_GITHUB_REPO_NAME = "AndroidIDE"; // Default: "termux-app"
     /** Termux GitHub repo url */
     public static final String TERMUX_GITHUB_REPO_URL = TERMUX_GITHUB_ORGANIZATION_URL + "/" + TERMUX_GITHUB_REPO_NAME; // Default: "https://github.com/termux/termux-app"
     /** Termux GitHub issues repo url */
