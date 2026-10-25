@@ -49,7 +49,7 @@ import com.jepongdevxyz.idefcs.resources.localization.LocaleProvider
 import com.jepongdevxyz.idefcs.stats.AndroidIDEStats
 import com.jepongdevxyz.idefcs.stats.StatUploadWorker
 import com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeAndroidIDE
-import com.jepongdevxyz.idefcs.treesitter.TreeSitter
+import com.itsaky.androidide.treesitter.TreeSitter
 import com.jepongdevxyz.idefcs.ui.themes.IDETheme
 import com.jepongdevxyz.idefcs.ui.themes.IThemeManager
 import com.jepongdevxyz.idefcs.utils.RecyclableObjectPool

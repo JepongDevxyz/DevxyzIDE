@@ -17,7 +17,7 @@
 
 package com.jepongdevxyz.idefcs.lsp.java.parser.ts
 
-import com.jepongdevxyz.idefcs.treesitter.TSTree
+import com.itsaky.androidide.treesitter.TSTree
 import jdkx.tools.JavaFileObject
 import java.net.URI
 

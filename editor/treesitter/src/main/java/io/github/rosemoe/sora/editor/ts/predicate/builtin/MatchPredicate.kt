@@ -24,9 +24,9 @@
 
 package io.github.rosemoe.sora.editor.ts.predicate.builtin
 
-import com.jepongdevxyz.idefcs.treesitter.TSQuery
-import com.jepongdevxyz.idefcs.treesitter.TSQueryMatch
-import com.jepongdevxyz.idefcs.treesitter.TSQueryPredicateStep.Type
+import com.itsaky.androidide.treesitter.TSQuery
+import com.itsaky.androidide.treesitter.TSQueryMatch
+import com.itsaky.androidide.treesitter.TSQueryPredicateStep.Type
 import io.github.rosemoe.sora.editor.ts.predicate.PredicateResult
 import io.github.rosemoe.sora.editor.ts.predicate.TsClientPredicateStep
 import io.github.rosemoe.sora.editor.ts.predicate.TsPredicate

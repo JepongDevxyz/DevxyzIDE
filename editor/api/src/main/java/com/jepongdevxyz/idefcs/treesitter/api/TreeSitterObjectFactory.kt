@@ -15,26 +15,26 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.jepongdevxyz.idefcs.treesitter.api
+package com.itsaky.androidide.treesitter.api
 
-import com.jepongdevxyz.idefcs.treesitter.TSInputEdit
-import com.jepongdevxyz.idefcs.treesitter.TSLanguage
-import com.jepongdevxyz.idefcs.treesitter.TSLookaheadIterator
-import com.jepongdevxyz.idefcs.treesitter.TSNode
-import com.jepongdevxyz.idefcs.treesitter.TSParser
-import com.jepongdevxyz.idefcs.treesitter.TSPoint
-import com.jepongdevxyz.idefcs.treesitter.TSQuery
-import com.jepongdevxyz.idefcs.treesitter.TSQueryCapture
-import com.jepongdevxyz.idefcs.treesitter.TSQueryCursor
-import com.jepongdevxyz.idefcs.treesitter.TSQueryMatch
-import com.jepongdevxyz.idefcs.treesitter.TSQueryPredicateStep
-import com.jepongdevxyz.idefcs.treesitter.TSRange
-import com.jepongdevxyz.idefcs.treesitter.TSTree
-import com.jepongdevxyz.idefcs.treesitter.TSTreeCursor
-import com.jepongdevxyz.idefcs.treesitter.TSTreeCursorNode
-import com.jepongdevxyz.idefcs.treesitter.string.SynchronizedUTF16String
-import com.jepongdevxyz.idefcs.treesitter.string.UTF16String
-import com.jepongdevxyz.idefcs.treesitter.util.TSObjectFactory
+import com.itsaky.androidide.treesitter.TSInputEdit
+import com.itsaky.androidide.treesitter.TSLanguage
+import com.itsaky.androidide.treesitter.TSLookaheadIterator
+import com.itsaky.androidide.treesitter.TSNode
+import com.itsaky.androidide.treesitter.TSParser
+import com.itsaky.androidide.treesitter.TSPoint
+import com.itsaky.androidide.treesitter.TSQuery
+import com.itsaky.androidide.treesitter.TSQueryCapture
+import com.itsaky.androidide.treesitter.TSQueryCursor
+import com.itsaky.androidide.treesitter.TSQueryMatch
+import com.itsaky.androidide.treesitter.TSQueryPredicateStep
+import com.itsaky.androidide.treesitter.TSRange
+import com.itsaky.androidide.treesitter.TSTree
+import com.itsaky.androidide.treesitter.TSTreeCursor
+import com.itsaky.androidide.treesitter.TSTreeCursorNode
+import com.itsaky.androidide.treesitter.string.SynchronizedUTF16String
+import com.itsaky.androidide.treesitter.string.UTF16String
+import com.itsaky.androidide.treesitter.util.TSObjectFactory
 
 /**
  * [TSObjectFactory] implementation for AndroidIDE.

@@ -41,10 +41,10 @@
 
 package io.github.rosemoe.sora.editor.ts
 
-import com.jepongdevxyz.idefcs.treesitter.TSInputEdit
-import com.jepongdevxyz.idefcs.treesitter.TSQueryCapture
-import com.jepongdevxyz.idefcs.treesitter.TSQueryCursor
-import com.jepongdevxyz.idefcs.treesitter.TSTree
+import com.itsaky.androidide.treesitter.TSInputEdit
+import com.itsaky.androidide.treesitter.TSQueryCapture
+import com.itsaky.androidide.treesitter.TSQueryCursor
+import com.itsaky.androidide.treesitter.TSTree
 import com.jepongdevxyz.idefcs.treesitter.api.TreeSitterQueryCapture
 import com.jepongdevxyz.idefcs.treesitter.api.safeExecQueryCursor
 import io.github.rosemoe.sora.editor.ts.spans.TsSpanFactory

@@ -28,14 +28,14 @@ import com.jepongdevxyz.idefcs.lsp.models.TextEdit
 import com.jepongdevxyz.idefcs.lsp.xml.XMLLanguageServer
 import com.jepongdevxyz.idefcs.models.Range
 import com.jepongdevxyz.idefcs.projects.FileManager
-import com.jepongdevxyz.idefcs.treesitter.TSParser
-import com.jepongdevxyz.idefcs.treesitter.TSQuery
-import com.jepongdevxyz.idefcs.treesitter.TSQueryCapture
-import com.jepongdevxyz.idefcs.treesitter.TSQueryCursor
-import com.jepongdevxyz.idefcs.treesitter.TSQueryError
-import com.jepongdevxyz.idefcs.treesitter.TSQueryMatch
-import com.jepongdevxyz.idefcs.treesitter.TSTree
-import com.jepongdevxyz.idefcs.treesitter.xml.TSLanguageXml
+import com.itsaky.androidide.treesitter.TSParser
+import com.itsaky.androidide.treesitter.TSQuery
+import com.itsaky.androidide.treesitter.TSQueryCapture
+import com.itsaky.androidide.treesitter.TSQueryCursor
+import com.itsaky.androidide.treesitter.TSQueryError
+import com.itsaky.androidide.treesitter.TSQueryMatch
+import com.itsaky.androidide.treesitter.TSTree
+import com.itsaky.androidide.treesitter.xml.TSLanguageXml
 
 /** @author Akash Yadav */
 object AdvancedEditProvider {

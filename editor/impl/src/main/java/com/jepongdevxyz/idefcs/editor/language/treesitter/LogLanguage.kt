@@ -19,7 +19,7 @@ package com.jepongdevxyz.idefcs.editor.language.treesitter
 
 import android.content.Context
 import com.jepongdevxyz.idefcs.editor.language.treesitter.TreeSitterLanguage.Factory
-import com.jepongdevxyz.idefcs.treesitter.log.TSLanguageLog
+import com.itsaky.androidide.treesitter.log.TSLanguageLog
 
 /**
  * Tree Sitter language implementation for logs.

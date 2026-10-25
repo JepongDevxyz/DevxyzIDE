@@ -87,6 +87,7 @@
 }
 
 -keep class com.jepongdevxyz.idefcs.treesitter.** { *; }
+-keep class com.itsaky.androidide.treesitter.** { *; }
 
 # Retrofit 2
 -dontwarn retrofit2.**

@@ -19,7 +19,7 @@ package com.jepongdevxyz.idefcs.editor.language.treesitter
 
 import android.content.Context
 import com.jepongdevxyz.idefcs.editor.language.treesitter.TreeSitterLanguage.Factory
-import com.jepongdevxyz.idefcs.treesitter.kotlin.TSLanguageKotlin
+import com.itsaky.androidide.treesitter.kotlin.TSLanguageKotlin
 import io.github.rosemoe.sora.lang.Language.INTERRUPTION_LEVEL_STRONG
 
 /**

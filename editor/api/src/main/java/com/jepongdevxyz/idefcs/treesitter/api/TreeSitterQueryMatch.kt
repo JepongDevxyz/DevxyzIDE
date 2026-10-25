@@ -15,10 +15,10 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.jepongdevxyz.idefcs.treesitter.api
+package com.itsaky.androidide.treesitter.api
 
-import com.jepongdevxyz.idefcs.treesitter.TSQueryCapture
-import com.jepongdevxyz.idefcs.treesitter.TSQueryMatch
+import com.itsaky.androidide.treesitter.TSQueryCapture
+import com.itsaky.androidide.treesitter.TSQueryMatch
 import com.jepongdevxyz.idefcs.utils.DefaultRecyclable
 import com.jepongdevxyz.idefcs.utils.RecyclableObjectPool
 

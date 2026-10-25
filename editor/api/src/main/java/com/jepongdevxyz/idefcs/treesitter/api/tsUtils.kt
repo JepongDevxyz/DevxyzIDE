@@ -15,13 +15,13 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.jepongdevxyz.idefcs.treesitter.api
+package com.itsaky.androidide.treesitter.api
 
-import com.jepongdevxyz.idefcs.treesitter.TSNode
-import com.jepongdevxyz.idefcs.treesitter.TSQuery
-import com.jepongdevxyz.idefcs.treesitter.TSQueryCursor
-import com.jepongdevxyz.idefcs.treesitter.TSQueryMatch
-import com.jepongdevxyz.idefcs.treesitter.TSTree
+import com.itsaky.androidide.treesitter.TSNode
+import com.itsaky.androidide.treesitter.TSQuery
+import com.itsaky.androidide.treesitter.TSQueryCursor
+import com.itsaky.androidide.treesitter.TSQueryMatch
+import com.itsaky.androidide.treesitter.TSTree
 import org.slf4j.LoggerFactory
 
 @PublishedApi

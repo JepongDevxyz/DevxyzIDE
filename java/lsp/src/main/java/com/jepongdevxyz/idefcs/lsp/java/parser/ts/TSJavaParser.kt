@@ -20,8 +20,8 @@ package com.jepongdevxyz.idefcs.lsp.java.parser.ts
 import com.jepongdevxyz.idefcs.eventbus.events.file.FileDeletionEvent
 import com.jepongdevxyz.idefcs.eventbus.events.file.FileRenameEvent
 import com.jepongdevxyz.idefcs.lsp.java.parser.IJavaParser
-import com.jepongdevxyz.idefcs.treesitter.TSParser
-import com.jepongdevxyz.idefcs.treesitter.java.TSLanguageJava
+import com.itsaky.androidide.treesitter.TSParser
+import com.itsaky.androidide.treesitter.java.TSLanguageJava
 import com.jepongdevxyz.idefcs.utils.StopWatch
 import jdkx.tools.JavaFileObject
 import org.greenrobot.eventbus.EventBus

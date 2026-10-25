@@ -17,9 +17,9 @@
 
 package com.jepongdevxyz.idefcs.editor.language.treesitter
 
-import com.jepongdevxyz.idefcs.treesitter.TSLanguage
-import com.jepongdevxyz.idefcs.treesitter.TSQuery
-import com.jepongdevxyz.idefcs.treesitter.TSQueryError
+import com.itsaky.androidide.treesitter.TSLanguage
+import com.itsaky.androidide.treesitter.TSQuery
+import com.itsaky.androidide.treesitter.TSQueryError
 import io.github.rosemoe.sora.editor.ts.TsLanguageSpec
 import java.io.Closeable
 

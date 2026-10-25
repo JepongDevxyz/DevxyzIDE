@@ -15,10 +15,10 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.jepongdevxyz.idefcs.treesitter.api
+package com.itsaky.androidide.treesitter.api
 
-import com.jepongdevxyz.idefcs.treesitter.TSPoint
-import com.jepongdevxyz.idefcs.treesitter.TSRange
+import com.itsaky.androidide.treesitter.TSPoint
+import com.itsaky.androidide.treesitter.TSRange
 import com.jepongdevxyz.idefcs.utils.DefaultRecyclable
 import com.jepongdevxyz.idefcs.utils.RecyclableObjectPool
 

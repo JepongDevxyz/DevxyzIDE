@@ -26,7 +26,7 @@ import com.jepongdevxyz.idefcs.editor.schemes.LanguageScheme
 import com.jepongdevxyz.idefcs.editor.schemes.LanguageSpecProvider.getLanguageSpec
 import com.jepongdevxyz.idefcs.editor.schemes.LocalCaptureSpecProvider.newLocalCaptureSpec
 import com.jepongdevxyz.idefcs.editor.utils.isNonBlankLine
-import com.jepongdevxyz.idefcs.treesitter.TSLanguage
+import com.itsaky.androidide.treesitter.TSLanguage
 import com.jepongdevxyz.idefcs.utils.IntPair
 import io.github.rosemoe.sora.editor.ts.TsTheme
 import io.github.rosemoe.sora.lang.Language.INTERRUPTION_LEVEL_STRONG

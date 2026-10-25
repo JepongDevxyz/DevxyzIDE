@@ -17,11 +17,11 @@
 
 package com.jepongdevxyz.idefcs.lsp.java.parser.ts
 
-import com.jepongdevxyz.idefcs.treesitter.TSQuery
-import com.jepongdevxyz.idefcs.treesitter.TSQueryCursor
-import com.jepongdevxyz.idefcs.treesitter.TSQueryMatch
-import com.jepongdevxyz.idefcs.treesitter.TSTree
-import com.jepongdevxyz.idefcs.treesitter.java.TSLanguageJava
+import com.itsaky.androidide.treesitter.TSQuery
+import com.itsaky.androidide.treesitter.TSQueryCursor
+import com.itsaky.androidide.treesitter.TSQueryMatch
+import com.itsaky.androidide.treesitter.TSTree
+import com.itsaky.androidide.treesitter.java.TSLanguageJava
 
 /**
  * Helper class to prune method bodies in Java source code using.

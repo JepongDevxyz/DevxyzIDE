@@ -20,8 +20,8 @@ package com.jepongdevxyz.idefcs.editor.language.treesitter
 import android.graphics.Color
 import androidx.core.graphics.ColorUtils
 import com.jepongdevxyz.idefcs.editor.schemes.LanguageScheme
-import com.jepongdevxyz.idefcs.treesitter.TSQuery
-import com.jepongdevxyz.idefcs.treesitter.TSQueryCapture
+import com.itsaky.androidide.treesitter.TSQuery
+import com.itsaky.androidide.treesitter.TSQueryCapture
 import com.jepongdevxyz.idefcs.utils.parseHexColor
 import io.github.rosemoe.sora.editor.ts.spans.DefaultSpanFactory
 import io.github.rosemoe.sora.editor.ts.spans.TsSpanFactory

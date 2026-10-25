@@ -22,7 +22,7 @@ import com.jepongdevxyz.idefcs.editor.language.treesitter.TreeSitterLanguage.Fac
 import com.jepongdevxyz.idefcs.lsp.api.ILanguageServer
 import com.jepongdevxyz.idefcs.lsp.api.ILanguageServerRegistry
 import com.jepongdevxyz.idefcs.lsp.xml.XMLLanguageServer
-import com.jepongdevxyz.idefcs.treesitter.xml.TSLanguageXml
+import com.itsaky.androidide.treesitter.xml.TSLanguageXml
 import io.github.rosemoe.sora.lang.Language.INTERRUPTION_LEVEL_STRONG
 import io.github.rosemoe.sora.util.MyCharacter
 
