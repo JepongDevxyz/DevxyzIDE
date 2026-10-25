@@ -46,7 +46,7 @@
       android:name=".activities.CrashHandlerActivity"
       android:windowSoftInputMode="stateAlwaysHidden">
       <intent-filter>
-        <action android:name="com.itsaky.androidide.REPORT_CRASH" />
+        <action android:name="com.jepongdevxyz.idefcs.REPORT_CRASH" />
         <category android:name="android.intent.category.DEFAULT" />
       </intent-filter>
     </activity>
@@ -79,7 +79,7 @@
       android:windowSoftInputMode="adjustResize" />
 
     <provider
-      android:authorities="com.itsaky.androidide.documents"
+      android:authorities="com.jepongdevxyz.idefcs.documents"
       android:exported="true"
       android:grantUriPermissions="true"
       android:name=".provider.IDEDocumentsProvider"
@@ -105,7 +105,7 @@
       android:name=".services.InstallationResultReceiver"
       tools:ignore="ExportedReceiver">
       <intent-filter>
-        <action android:name="com.itsaky.androidide.installer.INSTALL_PACKAGE" />
+        <action android:name="com.jepongdevxyz.idefcs.installer.INSTALL_PACKAGE" />
       </intent-filter>
     </receiver>
 
@@ -118,7 +118,7 @@
       android:name=".services.log.LogReceiverService"
       android:permission="com.jepongdevxyz.idefcs.permission.BIND_LOG_SERVICE">
       <intent-filter>
-        <action android:name="com.itsaky.androidide.LOG_SERVICE_ACTION" />
+        <action android:name="com.jepongdevxyz.idefcs.LOG_SERVICE_ACTION" />
       </intent-filter>
     </service>
     <service

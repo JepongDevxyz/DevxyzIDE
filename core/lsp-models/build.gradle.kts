@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import com.itsaky.androidide.build.config.BuildConfig
+import com.jepongdevxyz.idefcs.build.config.BuildConfig
 
 
 plugins {

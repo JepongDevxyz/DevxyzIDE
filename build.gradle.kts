@@ -17,13 +17,13 @@
 
 @file:Suppress("UnstableApiUsage")
 
-import com.itsaky.androidide.build.config.BuildConfig
-import com.itsaky.androidide.build.config.FDroidConfig
-import com.itsaky.androidide.build.config.publishingVersion
-import com.itsaky.androidide.plugins.AndroidIDEPlugin
-import com.itsaky.androidide.plugins.conf.configureAndroidModule
-import com.itsaky.androidide.plugins.conf.configureJavaModule
-import com.itsaky.androidide.plugins.conf.configureMavenPublish
+import com.jepongdevxyz.idefcs.build.config.BuildConfig
+import com.jepongdevxyz.idefcs.build.config.FDroidConfig
+import com.jepongdevxyz.idefcs.build.config.publishingVersion
+import com.jepongdevxyz.idefcs.plugins.AndroidIDEPlugin
+import com.jepongdevxyz.idefcs.plugins.conf.configureAndroidModule
+import com.jepongdevxyz.idefcs.plugins.conf.configureJavaModule
+import com.jepongdevxyz.idefcs.plugins.conf.configureMavenPublish
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -45,7 +45,7 @@ buildscript {
   }
 }
 
-// Root project has 'com.itsaky.androidide' as the group ID
+// Root project has 'com.jepongdevxyz.idefcs' as the group ID
 project.group = BuildConfig.packageName
 
 subprojects {

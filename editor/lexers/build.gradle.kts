@@ -16,8 +16,8 @@
  */
 
 
-import com.itsaky.androidide.plugins.LexerGeneratorPlugin
-import com.itsaky.androidide.build.config.BuildConfig
+import com.jepongdevxyz.idefcs.plugins.LexerGeneratorPlugin
+import com.jepongdevxyz.idefcs.build.config.BuildConfig
 
 plugins {
   id("java-library")

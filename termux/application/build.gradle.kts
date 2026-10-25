@@ -19,8 +19,8 @@
 
 
 
-import com.itsaky.androidide.build.config.BuildConfig
-import com.itsaky.androidide.plugins.TerminalBootstrapPackagesPlugin
+import com.jepongdevxyz.idefcs.build.config.BuildConfig
+import com.jepongdevxyz.idefcs.plugins.TerminalBootstrapPackagesPlugin
 
 plugins {
     id("com.android.library")

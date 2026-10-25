@@ -16,7 +16,7 @@
  */
 
 
-import com.itsaky.androidide.build.config.BuildConfig
+import com.jepongdevxyz.idefcs.build.config.BuildConfig
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
