@@ -58,7 +58,7 @@ dependencyResolutionManagement {
       this.name = build
       dependencySubstitution {
         for (module in modules) {
-          substitute(module("com.itsaky.androidide.build:${module}"))
+          substitute(module("com.jepongdevxyz.idefcs.build:${module}"))
             .using(project(":${module}"))
         }
       }

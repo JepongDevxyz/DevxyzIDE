@@ -25,7 +25,7 @@
 
 package openjdk.tools.javac.platform;
 
-import com.itsaky.androidide.javac.config.JavacConfigProvider;
+import com.jepongdevxyz.idefcs.javac.config.JavacConfigProvider;
 
 import java.io.IOException;
 import java.io.PrintWriter;

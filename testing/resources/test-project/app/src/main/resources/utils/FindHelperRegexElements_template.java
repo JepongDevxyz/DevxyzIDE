@@ -1,4 +1,4 @@
-package com.itsaky.androidide.lsp.java.test;
+package com.jepongdevxyz.idefcs.lsp.java.test;
 
 import java.util.*;
 

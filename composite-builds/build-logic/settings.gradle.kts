@@ -23,7 +23,7 @@ dependencyResolutionManagement {
 
   includeBuild("../build-deps-common") {
     dependencySubstitution {
-      substitute(module("com.itsaky.androidide.build:desugaring-core"))
+      substitute(module("com.jepongdevxyz.idefcs.build:desugaring-core"))
         .using(project(":desugaring-core"))
     }
   }

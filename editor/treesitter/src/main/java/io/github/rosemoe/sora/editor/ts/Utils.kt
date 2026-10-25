@@ -24,9 +24,9 @@
 
 package io.github.rosemoe.sora.editor.ts
 
-import com.itsaky.androidide.treesitter.TSPoint
-import com.itsaky.androidide.treesitter.TSQuery
-import com.itsaky.androidide.treesitter.TSQueryError
+import com.jepongdevxyz.idefcs.treesitter.TSPoint
+import com.jepongdevxyz.idefcs.treesitter.TSQuery
+import com.jepongdevxyz.idefcs.treesitter.TSQueryError
 import io.github.rosemoe.sora.text.CharPosition
 
 /**

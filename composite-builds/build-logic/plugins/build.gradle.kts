@@ -47,21 +47,21 @@ dependencies {
 
 gradlePlugin {
   plugins {
-    create("com.itsaky.androidide.build") {
-      id = "com.itsaky.androidide.build"
-      implementationClass = "com.itsaky.androidide.plugins.AndroidIDEPlugin"
+    create("com.jepongdevxyz.idefcs.build") {
+      id = "com.jepongdevxyz.idefcs.build"
+      implementationClass = "com.jepongdevxyz.idefcs.plugins.AndroidIDEPlugin"
     }
-    create("com.itsaky.androidide.core-app") {
-      id = "com.itsaky.androidide.core-app"
-      implementationClass = "com.itsaky.androidide.plugins.AndroidIDECoreAppPlugin"
+    create("com.jepongdevxyz.idefcs.core-app") {
+      id = "com.jepongdevxyz.idefcs.core-app"
+      implementationClass = "com.jepongdevxyz.idefcs.plugins.AndroidIDECoreAppPlugin"
     }
-    create("com.itsaky.androidide.build.propsparser") {
-      id = "com.itsaky.androidide.build.propsparser"
-      implementationClass = "com.itsaky.androidide.plugins.PropertiesParserPlugin"
+    create("com.jepongdevxyz.idefcs.build.propsparser") {
+      id = "com.jepongdevxyz.idefcs.build.propsparser"
+      implementationClass = "com.jepongdevxyz.idefcs.plugins.PropertiesParserPlugin"
     }
-    create("com.itsaky.androidide.build.lexergenerator") {
-      id = "com.itsaky.androidide.build.lexergenerator"
-      implementationClass = "com.itsaky.androidide.plugins.LexerGeneratorPlugin"
+    create("com.jepongdevxyz.idefcs.build.lexergenerator") {
+      id = "com.jepongdevxyz.idefcs.build.lexergenerator"
+      implementationClass = "com.jepongdevxyz.idefcs.plugins.LexerGeneratorPlugin"
     }
   }
 }
