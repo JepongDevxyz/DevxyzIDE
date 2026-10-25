@@ -15,7 +15,7 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.itsaky.androidide.treesitter.api
+package com.jepongdevxyz.idefcs.treesitter.api
 
 import com.itsaky.androidide.treesitter.TSTreeCursor
 import com.jepongdevxyz.idefcs.utils.DefaultRecyclable
