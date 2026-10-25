@@ -1,0 +1,31 @@
+name: Fix treesitter api package
+
+on:
+  workflow_dispatch: { }
+
+permissions:
+  contents: write
+
+jobs:
+  fix-api-package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout rename branch
+        uses: actions/checkout@v4
+        with:
+          ref: full-rename-idefcs
+          fetch-depth: 0
+      - name: Restore api package declarations
+        run: |
+          sed -i 's/^package com\.itsaky\.androidide\.treesitter\.api$/package com.jepongdevxyz.idefcs.treesitter.api/' editor/api/src/main/java/com/jepongdevxyz/idefcs/treesitter/api/*.kt
+          echo "idefcs api package lines (must be 19):"
+          grep -c "^package com.jepongdevxyz.idefcs.treesitter.api$" editor/api/src/main/java/com/jepongdevxyz/idefcs/treesitter/api/*.kt | grep -v ":0" | wc -l
+          echo "itsaky api package lines remaining (must be 0):"
+          grep -rn "^package com.itsaky.androidide.treesitter.api$" editor/api/src/main/java/com/jepongdevxyz/idefcs/treesitter/api/ || true
+      - name: Commit and push to rename branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "fix: restore idefcs package for local treesitter.api wrappers (previous regex broke package lines)"
+          git push origin full-rename-idefcs
