@@ -1,0 +1,47 @@
+---
+name: Fix treesitter imports
+
+on:
+  workflow_dispatch: { }
+
+permissions:
+  contents: write
+
+jobs:
+  fix-treesitter:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout rename branch
+        uses: actions/checkout@v4
+        with:
+          ref: full-rename-idefcs
+          fetch-depth: 0
+      - name: Restore external treesitter package
+        run: |
+          python3 - << 'PY'
+          import re, pathlib
+          pat = re.compile(r'com\.jepongdevxyz\.idefcs\.treesitter\.(?!api\.)')
+          for p in pathlib.Path('.').rglob('*'):
+              if '.git' in p.parts:
+                  continue
+              if p.suffix not in ('.kt', '.java'):
+                  continue
+              t = p.read_text(errors='ignore')
+              nt = pat.sub('com.itsaky.androidide.treesitter.', t)
+              if nt != t:
+                  p.write_text(nt)
+          pro = pathlib.Path('core/app/proguard-rules.pro')
+          t = pro.read_text()
+          if 'com.itsaky.androidide.treesitter' not in t:
+              t = t.replace('-keep class com.jepongdevxyz.idefcs.treesitter.** { *; }', '-keep class com.jepongdevxyz.idefcs.treesitter.** { *; }\n-keep class com.itsaky.androidide.treesitter.** { *; }')
+              pro.write_text(t)
+          PY
+          echo "Remaining external treesitter imports still idefcs (must be 0):"
+          grep -rn "com\.jepongdevxyz\.idefcs\.treesitter\." --include="*.kt" --include="*.java" . | grep -v "\.treesitter\.api\." | wc -l
+      - name: Commit and push to rename branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "fix: restore original external treesitter Java package for TS classes, keep local treesitter.api wrappers as idefcs"
+          git push origin full-rename-idefcs
