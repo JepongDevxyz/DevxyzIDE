@@ -105,13 +105,16 @@ abstract class TreeSitterLanguage(
     return INTERRUPTION_LEVEL_STRONG
   }
 
+  // Stable sora-editor 0.23.4 only has the 3-arg getIndentAdvance (the 5-arg version existed only in the SNAPSHOT). Compute leading space/tab counts from the line itself.
   override fun getIndentAdvance(
     content: ContentReference,
     line: Int,
-    column: Int,
-    spaceCountOnLine: Int,
-    tabCountOnLine: Int
-  ): Int {
+    column: Int
+): Int {
+    val lineText = content.reference.getLine(line).toString()
+    val leading = lineText.takeWhile { it == ' ' || it == '\t' }
+    val spaceCountOnLine = leading.count { it == ' ' }
+    val tabCountOnLine = leading.count { it == '\t' }
     return try {
       if (line == content.reference.lineCount - 1) {
         // line + 1 does not exist
