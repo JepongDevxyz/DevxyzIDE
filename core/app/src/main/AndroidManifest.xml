@@ -7,11 +7,11 @@
   <permission
     android:description="@string/permdesc_bind_logger_service"
     android:label="@string/permlab_bind_logger_service"
-    android:name="com.jepongdevxyz.devxyzide.permission.BIND_LOG_SERVICE"
+    android:name="com.jepongdevxyz.idefcs.permission.BIND_LOG_SERVICE"
     android:protectionLevel="normal"
     tools:ignore="ManifestOrder" />
 
-  <uses-permission android:name="com.jepongdevxyz.devxyzide.permission.BIND_LOG_SERVICE" />
+  <uses-permission android:name="com.jepongdevxyz.idefcs.permission.BIND_LOG_SERVICE" />
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -116,7 +116,7 @@
     <service
       android:exported="true"
       android:name=".services.log.LogReceiverService"
-      android:permission="com.jepongdevxyz.devxyzide.permission.BIND_LOG_SERVICE">
+      android:permission="com.jepongdevxyz.idefcs.permission.BIND_LOG_SERVICE">
       <intent-filter>
         <action android:name="com.itsaky.androidide.LOG_SERVICE_ACTION" />
       </intent-filter>
