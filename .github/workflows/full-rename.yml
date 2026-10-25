@@ -38,7 +38,7 @@ jobs:
           find . -path ./.git -prune -o -type d -path "*/com/itsaky/androidide" -print | wc -l
       - name: Verify rename
         run: |
-          test "$(grep -rI --exclude-dir=.git --exclude="full-rename.yml" "com.itsaky.androidide" . | wc -l)" = "0"
+          test "$(grep -rI --exclude-dir=.git --exclude="full-rename.yml" --exclude="v2.1.0-beta.md" "com.itsaky.androidide" . | wc -l)" = "0"
           test "$(grep -rI --exclude-dir=.git --exclude="full-rename.yml" --exclude="v2.1.0-beta.md" "com/itsaky/androidide" . | wc -l)" = "0"
           grep -q 'packageName = "com.jepongdevxyz.idefcs"' composite-builds/build-logic/common/src/main/java/com/jepongdevxyz/idefcs/build/config/BuildConfig.kt
           git status --short | wc -l
