@@ -1,0 +1,44 @@
+name: Full rename to idefcs
+
+on:
+  workflow_dispatch: { }
+
+permissions:
+  contents: write
+
+jobs:
+  full-rename:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout dev
+        uses: actions/checkout@v4
+        with:
+          ref: dev
+          fetch-depth: 0
+      - name: Rename package strings
+        run: |
+          grep -rlI --exclude-dir=.git --exclude="full-rename.yml" "com.itsaky.androidide" . | tr '\n' '\0' | xargs -0 sed -i 's/com\.itsaky\.androidide/com.jepongdevxyz.idefcs/g'
+          echo "Remaining old package occurrences:"
+          grep -rI --exclude-dir=.git "com.itsaky.androidide" . | wc -l
+      - name: Move package directories
+        run: |
+          find . -path ./.git -prune -o -type d -path "*/com/itsaky/androidide" -print | sort -r | while read -r d; do
+            target="${d/com\/itsaky\/androidide/com\/jepongdevxyz\/idefcs}"
+            mkdir -p "$(dirname "$target")"
+            git mv "$d" "$target" || mv "$d" "$target"
+          done
+          echo "Remaining old directories:"
+          find . -path ./.git -prune -o -type d -path "*/com/itsaky/androidide" -print | wc -l
+      - name: Verify rename
+        run: |
+          test "$(grep -rI --exclude-dir=.git "com.itsaky.androidide" . | wc -l)" = "0"
+          grep -q 'packageName = "com.jepongdevxyz.idefcs"' composite-builds/build-logic/common/src/main/java/com/jepongdevxyz/idefcs/build/config/BuildConfig.kt
+          git status --short | wc -l
+      - name: Commit and push to rename branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -B full-rename-idefcs
+          git add -A
+          git commit -m "full rename: com.itsaky.androidide -> com.jepongdevxyz.idefcs"
+          git push origin full-rename-idefcs --force
