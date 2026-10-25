@@ -65,8 +65,8 @@ jobs:
           distribution: ${{ env.BUILD_JAVA_DIST }}
       - name: Change Gradle wrapper permissions
         run: chmod +x ./gradlew
-        - name: Create debug keystore
-        if: matrix.build_type == 'debug'
+      - name: Create debug keystore
+        if: ${{ matrix.build_type == 'debug' }}
         run: |
           mikdir -p ~/.android ~/.config/.android
           keytool -genkeypair -v -keystore ~/.android/debug.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US"
