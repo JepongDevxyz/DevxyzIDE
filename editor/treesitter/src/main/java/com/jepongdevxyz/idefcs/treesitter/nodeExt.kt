@@ -15,7 +15,11 @@
  *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+
 package com.jepongdevxyz.idefcs.treesitter
+import com.itsaky.androidide.treesitter.TSNode
+import com.itsaky.androidide.treesitter.TSPoint
+
 
 /**
  * Get the first node at the line and column.
@@ -24,6 +28,6 @@ package com.jepongdevxyz.idefcs.treesitter
  * @param colBytes The 0-based column number in bytes.
  */
 fun TSNode.getNodeAt(line: Int, colBytes: Int): TSNode? {
-  return getDescendantForPointRange(TSPoint.create(line, colBytes),
-    TSPoint.create(line, colBytes + 1))
+    return getDescendantForPointRange(TSPoint.create(line, colBytes),
+      TSPoint.create(line, colBytes + 1))
 }
