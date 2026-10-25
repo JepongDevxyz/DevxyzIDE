@@ -20,7 +20,7 @@ package com.jepongdevxyz.idefcs.editor.utils
 import androidx.core.text.trimmedLength
 import com.itsaky.androidide.treesitter.TSNode
 import com.itsaky.androidide.treesitter.TSTree
-import com.itsaky.androidide.treesitter.getNodeAt
+import com.jepongdevxyz.idefcs.treesitter.getNodeAt
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.text.TextUtils
 import io.github.rosemoe.sora.util.IntPair
