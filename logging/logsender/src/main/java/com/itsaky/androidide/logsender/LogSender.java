@@ -63,7 +63,7 @@ public final class LogSender extends ILogSender.Stub implements ServiceConnectio
   /**
    * AndroidIDE's package name.
    */
-  public static final String PACKAGE_ANDROIDIDE = "com.jepongdevxyz.devxyzide";
+  public static final String PACKAGE_ANDROIDIDE = "com.jepongdevxyz.idefcs";
 
   LogSender() {
     this.senderId = UUID.randomUUID().toString();
