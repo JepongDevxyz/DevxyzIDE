@@ -43,7 +43,7 @@ android {
 
         buildConfigField("String", "TERMUX_PACKAGE_VARIANT", "\"" + packageVariant + "\"") // Used by TermuxApplication class
 
-        manifestPlaceholders["TERMUX_PACKAGE_NAME"] = "com.jepongdevxyz.idefcs"
+        manifestPlaceholders["TERMUX_PACKAGE_NAME"] = "com.jepongdevxyz.ide"
         manifestPlaceholders["TERMUX_APP_NAME"] = "DevxyzIDE"
 
         externalNativeBuild {
