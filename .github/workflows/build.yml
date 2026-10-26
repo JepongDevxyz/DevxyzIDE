@@ -71,11 +71,11 @@ jobs:
           mkdir -p ~/.android ~/.config/.android
           if [ -f .github/debug.keystore ]; then
             echo "Using stable debug keystore from repo."
-              cp .github/debug.keystore ~/.android/debug.keystore
+          cp .github/debug.keystore ~/.android/debug.keystore
           else
             echo "No stable keystore in repo, generating a temporary one."
             keytool -genkeypair -v -keystore ~/.android/debug.keystore -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -storepass android -keypass android -dname "CN=Android Debug,O=Android,C=US"
-        fi
+          fi
           cp ~/.android/debug.keystore ~/.config/.android/debug.keystore
           ls -lh ~/.android/debug.keystore ~/.config/.android/debug.keystore
       - name: Restore cache
