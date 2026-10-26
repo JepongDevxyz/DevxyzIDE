@@ -16,6 +16,8 @@
   ~   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
   -->
 <resources>
-    <!--  Required by F-Droid-->
-    <string name="app_name" translatable="false">DevxyzIDE</string>
+  <!-- Required by F-Droid-->
+  <string name="app_name" translatable="false">DevxyzIDE</string>
+  <string name="idepref_devOptions_leaks_title">Leaks</string>
+  <string name="idepref_devOptions_leaks_summary">View memory leaks detected by LeakCanary inside DevxyzIDE</string>
 </resources>
