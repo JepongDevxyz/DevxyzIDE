@@ -45,7 +45,7 @@ open class BaseFragment @JvmOverloads constructor(contentLayoutId: Int = 0) :
 
   companion object {
     const val ANDROID_DOCS_AUTHORITY = "com.android.externalstorage.documents"
-    const val ANDROIDIDE_DOCS_AUTHORITY = "com.jepongdevxyz.idefcs.documents"
+    const val ANDROIDIDE_DOCS_AUTHORITY = "com.jepongdevxyz.ide.documents"
   }
 
   override fun onDestroyView() {
