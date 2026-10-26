@@ -39,7 +39,7 @@ import java.util.zip.ZipInputStream;
 /**
  * Install the Termux bootstrap packages if necessary by following the below steps:
  * <p/>
- * (1) If $PREFIX already exist, assume that it is correct and be done. Note that this relies on that we do not create a
+ * (1) If $PREFIX already exist, assume that it is correct and be done, unless it was installed with the old bootstrap prefix, in which case it is re-extracted (see isBootstrapPrefixMigrated). Note that this relies on that we do not create a
  * broken $PREFIX directory below.
  * <p/>
  * (2) A progress dialog is shown with "Installing..." message and a spinner.
@@ -57,7 +57,7 @@ import java.util.zip.ZipInputStream;
  */
 public final class TermuxInstaller {
 
-    private static final String LOG_TAG = "TermuxInstaller";
+    private static final String LOG_TAG = "TermuxInstaller";     private static final String BOOTSTRAP_PREFIX_MARKER_FILE_NAME = ".bootstrap-prefix-ide";
 
     /** Performs bootstrap setup if necessary. */
     static void setupBootstrapIfNeeded(final Activity activity, final Runnable whenDone) {
@@ -100,7 +100,7 @@ public final class TermuxInstaller {
             return;
         }
 
-        if (shellExists(false)) {
+        if (shellExists(false) && !TermuxFileUtils.isTermuxPrefixDirectoryEmpty() && !isBootstrapPrefixMigrated()) { Logger.logInfo(LOG_TAG, "The termux prefix was installed with the old bootstrap prefix; deleting it so the patched bootstrap is re-extracted."); FileUtils.deleteFile("termux prefix directory", TERMUX_PREFIX_DIR_PATH, true); } if (shellExists(false)) {
             if (TermuxFileUtils.isTermuxPrefixDirectoryEmpty()) {
                 Logger.logInfo(LOG_TAG, "The termux prefix directory \"" + TERMUX_PREFIX_DIR_PATH + "\" exists but is empty or only contains specific unimportant files.");
             } else {
@@ -213,7 +213,7 @@ public final class TermuxInstaller {
                         throw new RuntimeException("Moving termux prefix staging to prefix directory failed");
                     }
 
-                    Logger.logInfo(LOG_TAG, "Bootstrap packages installed successfully.");
+                    Logger.logInfo(LOG_TAG, "Bootstrap packages installed successfully."); try { File markerFile = new File(TERMUX_PREFIX_DIR, BOOTSTRAP_PREFIX_MARKER_FILE_NAME); if (!markerFile.exists()) { markerFile.createNewFile(); } } catch (Exception ignored) { /* Marker is only an optimisation; the bin/bash RUNPATH check is the fallback. */ }
 
                     // Recreate env file since termux prefix was wiped earlier
                     TermuxShellEnvironment.writeEnvironmentToFile(activity);
@@ -236,7 +236,7 @@ public final class TermuxInstaller {
         }.start();
     }
 
-    public static void showBootstrapErrorDialog(Activity activity, Runnable whenDone, String message) {
+    private static boolean isBootstrapPrefixMigrated() { if (new File(TERMUX_PREFIX_DIR, BOOTSTRAP_PREFIX_MARKER_FILE_NAME).exists()) { return true; } return isPatchedBashPresent(); } private static boolean isPatchedBashPresent() { try { java.io.File bash = new java.io.File(TERMUX_PREFIX_DIR, "bin/bash"); if (!bash.exists()) { return false; } java.io.FileInputStream in = new java.io.FileInputStream(bash); java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream(); byte[] buffer = new byte[8192]; int count; while ((count = in.read(buffer)) != -1) { out.write(buffer, 0, count); } in.close(); String bashText = new String(out.toByteArray(), java.nio.charset.StandardCharsets.ISO_8859_1); return bashText.contains(TERMUX_PREFIX_DIR_PATH + "/lib"); } catch (Exception e) { return false; } } public static void showBootstrapErrorDialog(Activity activity, Runnable whenDone, String message) {
         Logger.logErrorExtended(LOG_TAG, "Bootstrap Error:\n" + message);
 
         // Send a notification with the exception so that the user knows why bootstrap setup failed

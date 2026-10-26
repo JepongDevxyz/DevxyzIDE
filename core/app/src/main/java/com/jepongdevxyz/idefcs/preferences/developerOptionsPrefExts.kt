@@ -17,9 +17,30 @@
 
 package com.jepongdevxyz.idefcs.preferences
 
+import android.content.Intent
 import com.jepongdevxyz.idefcs.R
 import com.jepongdevxyz.idefcs.preferences.internal.DevOpsPreferences
 import kotlinx.parcelize.Parcelize
+
+private const val KEY_LEAKS = "idepref_devopts_debugging_leaks"
+
+// LeakCanary is a debug-only dependency, so this opens it by class name only.
+// In release builds the activity is absent and the click is a no-op.
+val leaks =
+  SimpleClickablePreference(
+    key = KEY_LEAKS,
+    title = R.string.idepref_devOptions_leaks_title,
+    summary = R.string.idepref_devOptions_leaks_summary
+  ) {
+    try {
+      val intent = Intent()
+      intent.setClassName(it.context, "leakcanary.internal.activity.LeakActivity")
+      it.context.startActivity(intent)
+    } catch (e: Exception) {
+      // LeakCanary is not present in release builds; ignore the click.
+    }
+    true
+  }
 
 @Parcelize
 internal class DeveloperOptionsScreen(
@@ -42,6 +63,7 @@ internal class DebuggingPreferences(
   init {
     addPreference(DumpLogsPreference())
     addPreference(EnableLogSenderPreference())
+    addPreference(leaks)
   }
 }
 
