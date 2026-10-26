@@ -150,7 +150,7 @@ class PermissionsFragment : OnboardingMultiActionFragment(), SlidePolicy {
 
   private fun requestSettingsTogglePermission(action: String) {
     val intent = Intent(action)
-    intent.setData(Uri.fromParts("package", BuildInfo.PACKAGE_NAME, null))
+    intent.setData(Uri.fromParts("package", requireContext().packageName, null))
     settingsTogglePermissionRequestLauncher.launch(intent)
   }
 
