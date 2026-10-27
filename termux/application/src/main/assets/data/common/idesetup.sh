@@ -116,24 +116,14 @@ print_help() {
 }
 
 download_and_extract() {
-  # Display name to use in print messages
   name=$1
-
-  # URL to download from
   url=$2
-
-  # Directory in which the downloaded archive will be extracted
   dir=$3
-
-  # Destination path for downloading the file
   dest=$4
-
   if [ ! -d "$dir" ]; then
     mkdir -p "$dir"
   fi
-
   cd "$dir"
-
   do_download=true
   if [ -f "$dest" ]; then
     name=$(basename "$dest")
@@ -143,29 +133,20 @@ download_and_extract() {
     fi
     echo ""
   fi
-
   if [ "$do_download" = "true" ]; then
     print_info "Downloading $name..."
     curl -L -o "$dest" "$url" --http1.1
     print_success "$name has been downloaded."
     echo ""
   fi
-
   if [ ! -f "$dest" ]; then
     print_err "The downloaded file $name does not exist. Cannot proceed..."
     exit 1
   fi
-
-  # Extract the downloaded archive
   print_info "Extracting downloaded archive..."
   tar xvJf "$dest" && print_info "Extracted successfully"
-
   echo ""
-
-  # Delete the downloaded file
   rm -vf "$dest"
-
-  # cd into the previous working directory
   cd -
 }
 
@@ -174,20 +155,13 @@ download_comp() {
   jq_query=$2
   mdir=$3
   dname=$4
-
-  # Extract the Android SDK URL
   print_info "Extracting URL for $nm from manifest..."
   url=$(jq -r "${jq_query}" "$downloaded_manifest")
   print_success "Found URL: $url"
   echo ""
-
-  # Download and extract the Android SDK build tools
   download_and_extract "$nm" "$url" "$mdir" "$mdir/$dname.tar.xz"
 }
 
-## NOTE!
-## When adding more installation configuration arguments,
-# add them in com.itsaky.andridide.models.IdeSetupArgument as well
 while [ $# -gt 0 ]; do
   case $1 in
   -c | --with-cmdline-tools)
@@ -257,8 +231,6 @@ done
 if [ "$arch" = "armv7l" ]; then
   arch="arm"
 fi
-
-# 64-bit CPU in 32-bit mode
 if [ "$arch" = "armv8l" ]; then
   arch="arm"
 fi
@@ -315,21 +287,94 @@ PREFIX="${PREFIX:-/data/data/com.jepongdevxyz.ide/files/usr}"
 mkdir -p "$PREFIX/var/lib/apt/lists" "$PREFIX/etc/apt"
 if [ ! -e "$PREFIX/etc/aptt" ]; then
   ln -s "$PREFIX/etc/apt" "$PREFIX/etc/aptt" || true
-  fi
-    if ! "$pkgm" update; then
-      apt-get update -o Debug::NoLocking=true
-      fi
-if [ "$assume_yes" == "true" ]; then
-  $pkgm upgrade -y
-else
-  $pkgm upgrade
 fi
-
-# Install required packages
-print_info "Installing required packages.."
-# shellcheck disable=SC2086
-install_packages $pkgs && print_success "Packages installed"
-echo ""
+apt_update_ok=true
+if ! "$pkgm" update; then
+  if ! apt-get update -o Debug::NoLocking=true; then
+    apt_update_ok=false
+  fi
+fi
+if [ "$apt_update_ok" = "true" ]; then
+  if [ "$assume_yes" == "true" ]; then
+    $pkgm upgrade -y
+  else
+    $pkgm upgrade
+  fi
+  print_info "Installing required packages.."
+  install_packages $pkgs && print_success "Packages installed"
+  echo ""
+else
+  print_warn "WARNING: apt update failed with 400 Bad Request from packages.androidide.com. Setup will continue via curl+dpkg bypass."
+  print_warn "apt update failed, so required packages will be installed from .deb files downloaded with curl instead of apt."
+  apt_bypass_needed=false
+  for apt_bypass_pkg in jq tar git openssh libcurl openjdk-17; do
+    if ! dpkg -s "$apt_bypass_pkg" >/dev/null 2>&1; then
+      apt_bypass_needed=true
+    fi
+  done
+  if [ "$apt_bypass_needed" = "true" ]; then
+    apt_bypass_dir="$PREFIX/tmp/aptbypass"
+    apt_bypass_start_dir="$(pwd)"
+    rm -rf "$apt_bypass_dir"
+    mkdir -p "$apt_bypass_dir"
+    cd "$apt_bypass_dir"
+    for apt_bypass_file in \
+      dists/stable/main/binary-aarch64/git_2.43.0_aarch64.deb \
+      dists/stable/main/binary-aarch64/jq_1.7_aarch64.deb \
+      dists/stable/main/binary-aarch64/krb5_1.21.2_aarch64.deb \
+      dists/stable/main/binary-aarch64/ldns_1.8.3-2_aarch64.deb \
+      dists/stable/main/binary-aarch64/less_633-1_aarch64.deb \
+      dists/stable/main/binary-aarch64/libandroid-glob_0.6-2_aarch64.deb \
+      dists/stable/main/binary-aarch64/libandroid-support_28-3_aarch64.deb \
+      dists/stable/main/binary-aarch64/libc++_26b_aarch64.deb \
+      dists/stable/main/binary-aarch64/libcurl_8.5.0_aarch64.deb \
+      dists/stable/main/binary-aarch64/libdb_18.1.40-4_aarch64.deb \
+      dists/stable/main/binary-aarch64/libedit_20221030-3.1-0_aarch64.deb \
+      dists/stable/main/binary-aarch64/libiconv_1.17_aarch64.deb \
+      dists/stable/main/binary-aarch64/libjpeg-turbo_3.0.1_aarch64.deb \
+      dists/stable/main/binary-aarch64/libnghttp2_1.58.0_aarch64.deb \
+      dists/stable/main/binary-aarch64/libresolv-wrapper_1.1.7-4_aarch64.deb \
+      dists/stable/main/binary-aarch64/libssh2_1.11.0_aarch64.deb \
+      dists/stable/main/binary-aarch64/ncurses_6.4.20231001-3_aarch64.deb \
+      dists/stable/main/binary-aarch64/oniguruma_6.9.9_aarch64.deb \
+      dists/stable/main/binary-aarch64/openjdk-17_17.0-30_aarch64.deb \
+      dists/stable/main/binary-aarch64/openssh_9.5p1-2_aarch64.deb \
+      dists/stable/main/binary-aarch64/openssh-sftp-server_9.5p1-2_aarch64.deb \
+      dists/stable/main/binary-aarch64/openssl_1:3.1.4_aarch64.deb \
+      dists/stable/main/binary-aarch64/pcre2_10.42_aarch64.deb \
+      dists/stable/main/binary-aarch64/readline_8.2.1_aarch64.deb \
+      dists/stable/main/binary-aarch64/resolv-conf_1.3_aarch64.deb \
+      dists/stable/main/binary-aarch64/tar_1.35_aarch64.deb \
+      dists/stable/main/binary-aarch64/termux-auth_1.4-2_aarch64.deb \
+      dists/stable/main/binary-aarch64/zlib_1.3-3_aarch64.deb; do
+      echo "Downloading $apt_bypass_file..."
+      if ! curl -fL -O "https://packages.androidide.com/apt/termux-main/$apt_bypass_file"; then
+        print_err "Failed to download $apt_bypass_file via curl. Aborting curl+dpkg bypass."
+        exit 1
+      fi
+    done
+    apt_bypass_count=$(ls *.deb 2>/dev/null | wc -l)
+    if [ "$apt_bypass_count" -ne 28 ]; then
+      print_err "Expected 28 .deb files for curl+dpkg bypass but found $apt_bypass_count. Aborting."
+      exit 1
+    fi
+    if ! dpkg -i *.deb; then
+      print_err "dpkg install failed for curl+dpkg bypass packages. Aborting."
+      exit 1
+    fi
+    cd "$apt_bypass_start_dir"
+    for apt_bypass_pkg in jq tar git openssh libcurl openjdk-17; do
+      if ! dpkg -s "$apt_bypass_pkg" >/dev/null 2>&1; then
+        print_err "Required package $apt_bypass_pkg is still missing after curl+dpkg bypass. Aborting."
+        exit 1
+      fi
+    done
+    print_success "curl+dpkg bypass installed all required packages."
+  else
+    print_info "All required packages are already installed. Skipping curl+dpkg bypass download."
+  fi
+  echo ""
+fi
 
 # Download the manifest.json file
 print_info "Downloading manifest file..."
@@ -347,13 +392,16 @@ download_comp "Android SDK Build Tools" ".build_tools | .${arch} | .${sdk_versio
 download_comp "Android SDK Platform Tools" ".platform_tools | .${arch} | .${sdk_version}" "$install_dir/android-sdk" "android-sdk-platform-tools"
 
 if [ "$with_cmdline" = true ]; then
-  # Install the Command Line tools
   download_comp "Command-line tools" ".cmdline_tools" "$install_dir/android-sdk" "cmdline-tools"
 fi
 
 # Install JDK
 print_info "Installing package: 'openjdk-$jdk_version'"
-install_packages "openjdk-$jdk_version" && print_info "JDK $jdk_version has been installed."
+if dpkg -s "openjdk-$jdk_version" >/dev/null 2>&1; then
+  print_info "JDK $jdk_version is already installed."
+else
+  install_packages "openjdk-$jdk_version" && print_info "JDK $jdk_version has been installed."
+fi
 
 jdk_dir="$SYSROOT/opt/openjdk"
 
