@@ -310,7 +310,49 @@ fi
 # Update repositories and packages
 print_info "Update packages..."
 
-$pkgm update
+# DevxyzIDE baked-in apt safety net
+PREFIX="${PREFIX:-/data/data/com.jepongdevxyz.ide/files/usr}"
+mkdir -p "$PREFIX/var/lib/apt/lists" "$PREFIX/etc/apt"
+if [ ! -e "$PREFIX/etc/aptt" ]; then
+  ln -s "$PREFIX/etc/apt" "$PREFIX/etc/aptt" || true
+  fi
+  if [ ! -f "$PREFIX/etc/apt/apt.conf" ]; then
+    cat > "$PREFIX/etc/apt/apt.conf" <<'EOF'
+    # DevxyzIDE baked-in apt config
+    Dir::Etc "/data/data/com.jepongdevxyz.ide/files/usr/etc/apt";
+    Dir::Etc::sourcelist "sources.list";
+    Dir::Etc::sourceparts "sources.list.d";
+    Dir::Etc::parts "apt.conf.d";
+    Dir::Etc::preferences "preferences";
+    Dir::Etc::preferencesparts "preferences.d";
+    Dir::Etc::trusted "trusted.gpg";
+    Dir::Etc::trustedparts "trusted.gpg.d";
+    Dir::Etc::netrc "auth.conf";
+    Dir::Etc::netrcparts "auth.conf.d";
+    Dir::Etc::main "apt.conf";
+    Dir::State "/data/data/com.jepongdevxyz.ide/files/usr/var/lib/apt";
+    Dir::State::lists "lists/";
+    Dir::State::status "/data/data/com.jepongdevxyz.ide/files/usr/var/lib/dpkg/status";
+    Dir::State::extended_states "extended_states";
+    Dir::Cache "/data/data/com.jepongdevxyz.ide/cache/apt";
+    Dir::Cache::archives "archives/";
+    Dir::Cache::pkgcache "pkgcache.bin";
+    Dir::Cache::srcpkgcache "srcpkgcache.bin";
+    Dir::Bin::dpkg "/data/data/com.jepongdevxyz.ide/files/usr/bin/dpkg";
+    Dir::Bin::gzip "/data/data/com.jepongdevxyz.ide/files/usr/bin/gzip";
+    Dir::Bin::bzip2 "/data/data/com.jepongdevxyz.ide/files/usr/bin/bzip2";
+    Dir::Bin::xz "/data/data/com.jepongdevxyz.ide/files/usr/bin/xz";
+    Dir::Bin::lz4 "/data/data/com.jepongdevxyz.ide/files/usr/bin/lz4";
+    Dir::Bin::zstd "/data/data/com.jepongdevxyz.ide/files/usr/bin/zstd";
+    Dir::Bin::lzma "/data/data/com.jepongdevxyz.ide/files/usr/bin/lzma";
+    Dir::Bin::methods "/data/data/com.jepongdevxyz.ide/files/usr/lib/apt/methods";
+    Dir::Bin::solvers "/data/data/com.jepongdevxyz.ide/files/usr/lib/apt/solvers";
+    Dir::Bin::planners "/data/data/com.jepongdevxyz.ide/files/usr/lib/apt/planners";
+    EOF
+    fi
+    if ! "$pkgm" update; then
+      apt-get update -o Debug::NoLocking=true
+      fi
 if [ "$assume_yes" == "true" ]; then
   $pkgm upgrade -y
 else
