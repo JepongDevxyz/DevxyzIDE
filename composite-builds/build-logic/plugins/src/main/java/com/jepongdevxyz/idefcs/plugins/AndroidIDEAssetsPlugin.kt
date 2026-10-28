@@ -26,8 +26,16 @@ import com.jepongdevxyz.idefcs.plugins.tasks.GenerateInitScriptTask
 import com.jepongdevxyz.idefcs.plugins.tasks.GradleWrapperGeneratorTask
 import com.jepongdevxyz.idefcs.plugins.tasks.SetupAapt2Task
 import com.jepongdevxyz.idefcs.plugins.util.SdkUtils.getAndroidJar
+import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.publish.maven.tasks.GenerateMavenPom
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.bundling.Jar
 import org.gradle.configurationcache.extensions.capitalized
 
 /**
@@ -92,8 +100,71 @@ class AndroidIDEAssetsPlugin : Plugin<Project> {
 
         variant.sources.assets?.addGeneratedSourceDirectory(copyToolingApiJar,
           AddFileToAssetsTask::outputDirectory)
+
+        // Local Gradle plugin JAR/POM copiers. The plugin jar and its generated
+        // pom are bundled as assets so the IDE can resolve the build plugin
+        // from the device instead of a remote repository.
+        val localPluginProject = checkNotNull(rootProject.findProject(":tooling:plugin")) {
+          "Cannot find the Tooling Plugin module with project path: ':tooling:plugin'"
+        }
+        val localPluginJarTask = localPluginProject.tasks.getByName("jar") as Jar
+        val localPluginPomTask = localPluginProject.tasks.getByName(
+          "generatePomFileForMavenPublication") as GenerateMavenPom
+
+        val copyLocalPluginJar = tasks.register("copy${variantNameCapitalized}LocalPluginJar",
+          AddFileToAssetsTask::class.java) {
+          dependsOn(localPluginJarTask)
+          inputFile.set(localPluginJarTask.archiveFile)
+          fileName.set("gradle-plugin.jar")
+          baseAssetsPath.set("data/common/local-plugin")
+        }
+
+        variant.sources.assets?.addGeneratedSourceDirectory(copyLocalPluginJar,
+          AddFileToAssetsTask::outputDirectory)
+
+        val copyLocalPluginPom = tasks.register("copy${variantNameCapitalized}LocalPluginPom",
+          AddFileToAssetsTask::class.java) {
+          dependsOn(localPluginPomTask)
+          inputFile.set(localPluginPomTask.destination)
+          fileName.set("gradle-plugin.pom")
+          baseAssetsPath.set("data/common/local-plugin")
+        }
+
+        variant.sources.assets?.addGeneratedSourceDirectory(copyLocalPluginPom,
+          AddFileToAssetsTask::outputDirectory)
+
+        // Local plugin version file. The version is the same downloadVersion
+        // used for the init script classpath, not a hardcoded value.
+        val writeLocalPluginVersion = tasks.register(
+          "write${variantNameCapitalized}LocalPluginVersion",
+          LocalPluginVersionTask::class.java) {
+          version.set(this@run.downloadVersion)
+        }
+
+        variant.sources.assets?.addGeneratedSourceDirectory(writeLocalPluginVersion,
+          LocalPluginVersionTask::outputDirectory)
       }
     }
   }
 }
 
+/**
+ * Writes the local plugin version to assets as data/common/local-plugin-version.txt.
+ * The version is supplied by the caller (the same downloadVersion used for the
+ * init script classpath) and is written with no extra content.
+ */
+abstract class LocalPluginVersionTask : DefaultTask() {
+
+  @get:Input
+  abstract val version: Property<String>
+
+  @get:OutputDirectory
+  abstract val outputDirectory: DirectoryProperty
+
+  @TaskAction
+  fun write() {
+    val outFile = outputDirectory.file("data/common/local-plugin-version.txt").get().asFile
+      .also { it.parentFile.mkdirs() }
+    outFile.writeText(version.get())
+  }
+}
