@@ -105,7 +105,7 @@ internal class ToolingServerRunner(
         // error stream is used to read the server logs
         this.redirectErrorStream = false
         this.workingDirectory = null // HOME
-        this.environment = envs + ("TMPDIR" to Environment.TMP_DIR.absolutePath)
+        this.environment = envs + ("TMPDIR" to Environment.TMP_DIR.absolutePath) + ("LD_LIBRARY_PATH" to Environment.PREFIX.absolutePath + "/lib")
       }
 
       pid = ReflectionUtils.getDeclaredField(process::class.java, "pid")?.get(process) as Int?
