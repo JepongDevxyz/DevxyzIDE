@@ -125,10 +125,16 @@ class AndroidIDEAssetsPlugin : Plugin<Project> {
         variant.sources.assets?.addGeneratedSourceDirectory(copyLocalPluginJar,
           AddFileToAssetsTask::outputDirectory)
 
+        // GenerateMavenPom.destination is a plain File, not a file property,
+        // so wrap the lazy task output with the project layout to keep the
+        // pom location lazy without evaluating :tooling:plugin eagerly.
+        val localPluginPomFile = localPluginProject.layout.file(
+          localPluginPomTask.map { it.destination })
+
         val copyLocalPluginPom = tasks.register("copy${variantNameCapitalized}LocalPluginPom",
           AddFileToAssetsTask::class.java) {
           dependsOn(localPluginPomTask)
-          inputFile.set(localPluginPomTask.flatMap { it.destination })
+          inputFile.set(localPluginPomFile)
           fileName.set("gradle-plugin.pom")
           baseAssetsPath.set("data/common/local-plugin")
         }
