@@ -116,8 +116,11 @@ class AndroidIDEAssetsPlugin : Plugin<Project> {
           "Cannot find the Tooling Plugin module with project path: ':tooling:plugin'"
         }
         val localPluginJarTask = localPluginProject.tasks.named("jar", Jar::class.java)
+        // The java-gradle-plugin names its publication "pluginMaven", so
+        // its generated pom task is generatePomFileForPluginMavenPublication,
+        // not generatePomFileForMavenPublication.
         val localPluginPomTask = localPluginProject.tasks.named(
-          "generatePomFileForMavenPublication", GenerateMavenPom::class.java)
+          "generatePomFileForPluginMavenPublication", GenerateMavenPom::class.java)
 
         val copyLocalPluginJar = tasks.register("copy${variantNameCapitalized}LocalPluginJar",
           AddFileToAssetsTask::class.java) {
@@ -132,7 +135,7 @@ class AndroidIDEAssetsPlugin : Plugin<Project> {
 
         // GenerateMavenPom.destination is a plain File, not a file property,
         // so wrap the lazy task output with the project layout to keep the
-        // pom location lazy without evaluating :tooling:plugin eagerly.
+        // pom location lazy.
         val localPluginPomFile = localPluginProject.layout.file(
           localPluginPomTask.map { it.destination })
 
