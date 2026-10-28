@@ -15,7 +15,7 @@ arch=$(uname -m)
 install_dir=$HOME
 sdkver_org=34.0.4
 with_cmdline=true
-assume_yes=false
+assume_yes=true
 manifest="https://raw.githubusercontent.com/AndroidIDEOfficial/androidide-tools/main/manifest.json"
 pkgm="pkg"
 pkg_curl="libcurl"
@@ -214,6 +214,19 @@ install_deb_extract() {
   return 0
 }
 
+# download_deb downloads a .deb without extracting it.
+download_deb() {
+deb_path="$1"
+deb_file="$2"
+if [ ! -f "$deb_file" ]; then
+print_info "Downloading $deb_file..."
+if ! curl -fL -O "https://packages.androidide.com/apt/termux-main/$deb_path"; then
+print_err "Failed to download $deb_file via curl."
+return 1
+fi
+fi
+return 0
+}
 # finalize_jdk: renames a versioned JDK dir (e.g. opt/openjdk-17.0) to the
 # unversioned path the IDE expects ($SYSROOT/opt/openjdk), copies libz into
 # the JDK lib dir (the Android linker does not search $PREFIX/lib on its own),
@@ -274,6 +287,11 @@ while [ $# -gt 0 ]; do
   -y | --assume-yes)
     shift
     assume_yes=true
+  
+    ;;
+    --no-assume-yes)
+    shift
+    assume_yes=false
     ;;
   -i | --install-dir)
     shift
@@ -453,15 +471,23 @@ if [ "$apt_update_ok" = "false" ]; then
       dists/stable/main/binary-aarch64/termux-auth_1.4-2_aarch64.deb \
       dists/stable/main/binary-aarch64/zlib_1.3-3_aarch64.deb; do
       deb_name=$(basename "$apt_bypass_file")
-      if ! install_deb_extract "$apt_bypass_file" "$deb_name"; then
+      if ! download_deb "$apt_bypass_file" "$deb_name"; then
         print_err "Aborting curl+extract bypass."
         exit 1
       fi
+    done
+    # Phase 2: extract all downloaded .deb files.
+    for deb_file in *.deb; do
+    if ! install_deb_extract "$deb_file" "$deb_file"; then
+    print_err "Aborting curl+extract bypass."
+    exit 1
+    fi
     done
     cd "$apt_bypass_start_dir"
     if finalize_jdk; then
       print_success "curl+extract bypass installed all required packages."
     else
+    
       print_err "JDK binary still missing after curl+extract bypass. Aborting."
       exit 1
     fi
