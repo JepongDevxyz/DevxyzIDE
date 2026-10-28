@@ -1,4 +1,4 @@
-; Indents query for AndroidIDE
+; Indents query for DevxyzIDE
 
 (xml_decl
   "<?" @indent

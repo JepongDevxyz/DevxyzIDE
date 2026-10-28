@@ -1,29 +1,29 @@
 /*
- *  This file is part of AndroidIDE.
+ *  This file is part of DevxyzIDE.
  *
- *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  DevxyzIDE is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  AndroidIDE is distributed in the hope that it will be useful,
+ *  DevxyzIDE is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ *   along with DevxyzIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 package com.jepongdevxyz.idefcs.editor.language.cpp;
 
-import static com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeAndroidIDE.LITERAL;
-import static com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeAndroidIDE.OPERATOR;
-import static com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeAndroidIDE.TEXT_NORMAL;
-import static com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeAndroidIDE.TYPE_NAME;
-import static com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeAndroidIDE.forComment;
-import static com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeAndroidIDE.forKeyword;
-import static com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeAndroidIDE.forString;
+import static com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeDevxyzIDE.LITERAL;
+import static com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeDevxyzIDE.OPERATOR;
+import static com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeDevxyzIDE.TEXT_NORMAL;
+import static com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeDevxyzIDE.TYPE_NAME;
+import static com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeDevxyzIDE.forComment;
+import static com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeDevxyzIDE.forKeyword;
+import static com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeDevxyzIDE.forString;
 import static io.github.rosemoe.sora.lang.styling.TextStyle.makeStyle;
 
 import com.jepongdevxyz.idefcs.editor.language.incremental.BaseIncrementalAnalyzeManager;

@@ -1,18 +1,18 @@
 /*
- *  This file is part of AndroidIDE.
+ *  This file is part of DevxyzIDE.
  *
- *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  DevxyzIDE is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  AndroidIDE is distributed in the hope that it will be useful,
+ *  DevxyzIDE is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ *   along with DevxyzIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 package com.jepongdevxyz.idefcs.plugins.tasks
@@ -26,7 +26,7 @@ import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 
 /**
- * Generates the Gradle init script for AndroidIDE.
+ * Generates the Gradle init script for DevxyzIDE.
  */
 abstract class GenerateInitScriptTask : DefaultTask() {
 
@@ -63,12 +63,12 @@ abstract class GenerateInitScriptTask : DefaultTask() {
               }
               
               maven {
-                  // Add snapshots repository for AndroidIDE CI builds
+                  // Add snapshots repository for DevxyzIDE CI builds
                   url "${VersionUtils.SONATYPE_SNAPSHOTS_REPO}"
               }
               
               maven {
-                  // Add public repository for AndroidIDE release builds
+                  // Add public repository for DevxyzIDE release builds
                   url "${VersionUtils.SONATYPE_PUBLIC_REPO}"
               }
               
@@ -83,7 +83,7 @@ abstract class GenerateInitScriptTask : DefaultTask() {
           }
       }
       
-      apply plugin: com.jepongdevxyz.idefcs.gradle.AndroidIDEInitScriptPlugin
+      apply plugin: com.jepongdevxyz.idefcs.gradle.DevxyzIDEInitScriptPlugin
     """
           .trimIndent()
       )

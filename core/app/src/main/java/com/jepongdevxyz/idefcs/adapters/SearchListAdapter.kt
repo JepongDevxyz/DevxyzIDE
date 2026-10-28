@@ -1,15 +1,15 @@
 /**
- * This file is part of AndroidIDE.
+ * This file is part of DevxyzIDE.
  *
- * AndroidIDE is free software: you can redistribute it and/or modify it under the terms of the GNU
+ * DevxyzIDE is free software: you can redistribute it and/or modify it under the terms of the GNU
  * General Public License as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
- * AndroidIDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * DevxyzIDE is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
  * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with AndroidIDE. If not,
+ * You should have received a copy of the GNU General Public License along with DevxyzIDE. If not,
  * see <https:></https:>//www.gnu.org/licenses/>.
  */
 package com.jepongdevxyz.idefcs.adapters
@@ -27,7 +27,7 @@ import com.jepongdevxyz.idefcs.databinding.LayoutSearchResultGroupBinding
 import com.jepongdevxyz.idefcs.databinding.LayoutSearchResultItemBinding
 import com.jepongdevxyz.idefcs.models.FileExtension
 import com.jepongdevxyz.idefcs.models.SearchResult
-import com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeAndroidIDE
+import com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeDevxyzIDE
 import com.jepongdevxyz.idefcs.syntax.highlighters.JavaHighlighter
 import com.jepongdevxyz.idefcs.utils.resolveAttr
 import java.io.File
@@ -78,7 +78,7 @@ class SearchListAdapter(
       val binding = p1.binding
       CompletableFuture.runAsync {
         try {
-          val scheme = SchemeAndroidIDE.newInstance(binding.text.context)
+          val scheme = SchemeDevxyzIDE.newInstance(binding.text.context)
           val sb = JavaHighlighter().highlight(scheme, match.line, match.match)
           ThreadUtils.runOnUiThread { binding.text.text = sb }
         } catch (e: Exception) {

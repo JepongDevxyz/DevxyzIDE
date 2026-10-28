@@ -1,25 +1,25 @@
 /*
- *  This file is part of AndroidIDE.
+ *  This file is part of DevxyzIDE.
  *
- *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  DevxyzIDE is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  AndroidIDE is distributed in the hope that it will be useful,
+ *  DevxyzIDE is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ *   along with DevxyzIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 package com.jepongdevxyz.idefcs.editor.schemes.internal.parser
 
 import com.google.gson.stream.JsonReader
 import com.jepongdevxyz.idefcs.editor.schemes.IDEColorScheme
-import com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeAndroidIDE
+import com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeDevxyzIDE
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 import java.io.File
 
@@ -61,20 +61,20 @@ class SchemeParser(private val resolveFileRef: (String) -> File) {
     COMPLETION_WINDOW_OUTLINE("completion.window.outline", EditorColorScheme.COMPLETION_WND_CORNER),
     COMPLETION_WND_TEXT_LABEL(
       "completion.window.text.label",
-      SchemeAndroidIDE.COMPLETION_WND_TEXT_LABEL
+      SchemeDevxyzIDE.COMPLETION_WND_TEXT_LABEL
     ),
     COMPLETION_WND_TEXT_DETAIL(
       "completion.window.text.detail",
-      SchemeAndroidIDE.COMPLETION_WND_TEXT_DETAIL
+      SchemeDevxyzIDE.COMPLETION_WND_TEXT_DETAIL
     ),
-    COMPLETION_WND_TEXT_API("completion.window.text.api", SchemeAndroidIDE.COMPLETION_WND_TEXT_API),
+    COMPLETION_WND_TEXT_API("completion.window.text.api", SchemeDevxyzIDE.COMPLETION_WND_TEXT_API),
     COMPLETION_WND_TEXT_TYPE(
       "completion.window.text.type",
-      SchemeAndroidIDE.COMPLETION_WND_TEXT_TYPE
+      SchemeDevxyzIDE.COMPLETION_WND_TEXT_TYPE
     ),
     COMPLETION_WND_BG_CURRENT_ITEM(
       "completion.window.item.current",
-      SchemeAndroidIDE.COMPLETION_WND_BG_CURRENT_ITEM
+      SchemeDevxyzIDE.COMPLETION_WND_BG_CURRENT_ITEM
     ),
     NON_PRINTABLE_CHAR("non_printable_char", EditorColorScheme.NON_PRINTABLE_CHAR),
     HIGHLIGHTED_DELIMITERS_UNDERLINE(

@@ -42,9 +42,9 @@ public class LogcatAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
   private IDELogFormatEncoder encoder = null;
   private boolean checkLoggable = false;
 
-  // AndroidIDE Changed: Appender is enabled only when running on Android.
+  // DevxyzIDE Changed: Appender is enabled only when running on Android.
   private boolean isAndroid = false;
-  // AndroidIDE Changed
+  // DevxyzIDE Changed
 
   /**
    * Checks that required parameters are set, and if everything is in order, activates this

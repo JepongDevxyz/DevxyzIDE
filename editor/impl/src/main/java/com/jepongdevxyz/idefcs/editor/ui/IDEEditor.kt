@@ -1,18 +1,18 @@
 /*
- *  This file is part of AndroidIDE.
+ *  This file is part of DevxyzIDE.
  *
- *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  DevxyzIDE is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  AndroidIDE is distributed in the hope that it will be useful,
+ *  DevxyzIDE is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ *   along with DevxyzIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 package com.jepongdevxyz.idefcs.editor.ui
@@ -66,7 +66,7 @@ import com.jepongdevxyz.idefcs.models.Range
 import com.jepongdevxyz.idefcs.preferences.internal.EditorPreferences
 import com.jepongdevxyz.idefcs.progress.ICancelChecker
 import com.jepongdevxyz.idefcs.syntax.colorschemes.DynamicColorScheme
-import com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeAndroidIDE
+import com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeDevxyzIDE
 import com.jepongdevxyz.idefcs.tasks.JobCancelChecker
 import com.jepongdevxyz.idefcs.tasks.cancelIfActive
 import com.jepongdevxyz.idefcs.tasks.launchAsyncWithProgress
@@ -577,12 +577,12 @@ open class IDEEditor @JvmOverloads constructor(
    * Applies the given [TreeSitterLanguage] and the [color scheme][scheme] for the given [file type][type].
    */
   open fun applyTreeSitterLang(language: TreeSitterLanguage, type: String,
-    scheme: SchemeAndroidIDE?) {
+    scheme: SchemeDevxyzIDE?) {
     applyTreeSitterLangInternal(language, type, scheme)
   }
 
   private fun applyTreeSitterLangInternal(language: TreeSitterLanguage, type: String,
-    scheme: SchemeAndroidIDE?) {
+    scheme: SchemeDevxyzIDE?) {
     if (isReleased) {
       return
     }
@@ -590,7 +590,7 @@ open class IDEEditor @JvmOverloads constructor(
       scheme
     } else {
       log.error("Failed to read current color scheme")
-      SchemeAndroidIDE.newInstance(context)
+      SchemeDevxyzIDE.newInstance(context)
     }
 
     if (finalScheme is IDEColorScheme) {
@@ -599,7 +599,7 @@ open class IDEEditor @JvmOverloads constructor(
 
       if (finalScheme.getLanguageScheme(type) == null) {
         log.warn("Color scheme does not support file type '{}'", type)
-        finalScheme = SchemeAndroidIDE.newInstance(context)
+        finalScheme = SchemeDevxyzIDE.newInstance(context)
       }
     }
 
@@ -663,7 +663,7 @@ open class IDEEditor @JvmOverloads constructor(
     markUnmodified()
 
     searcher = IDEEditorSearcher(this)
-    colorScheme = SchemeAndroidIDE.newInstance(context)
+    colorScheme = SchemeDevxyzIDE.newInstance(context)
     inputType = createInputTypeFlags()
 
     val window = EditorCompletionWindow(this)

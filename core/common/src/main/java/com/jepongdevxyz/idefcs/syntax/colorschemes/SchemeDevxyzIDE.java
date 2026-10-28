@@ -1,18 +1,18 @@
 /*
- * This file is part of AndroidIDE.
+ * This file is part of DevxyzIDE.
  *
- * AndroidIDE is free software: you can redistribute it and/or modify
+ * DevxyzIDE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * AndroidIDE is distributed in the hope that it will be useful,
+ * DevxyzIDE is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ * along with DevxyzIDE.  If not, see <https://www.gnu.org/licenses/>.
  *
  */
 package com.jepongdevxyz.idefcs.syntax.colorschemes;
@@ -23,14 +23,14 @@ import io.github.rosemoe.sora.lang.styling.TextStyle;
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme;
 
 /**
- * Base class for editor color schemes in AndroidIDE. If you're implementing a color scheme for the
+ * Base class for editor color schemes in DevxyzIDE. If you're implementing a color scheme for the
  * IDE, this should be the base class instead of {@link EditorColorScheme}.
  *
  * @author Akash Yadav
  */
-public class SchemeAndroidIDE extends EditorColorScheme {
+public class SchemeDevxyzIDE extends EditorColorScheme {
 
-  protected SchemeAndroidIDE() {}
+  protected SchemeDevxyzIDE() {}
 
   protected static int endColorId = EditorColorScheme.END_COLOR_ID;
   
@@ -110,9 +110,9 @@ public class SchemeAndroidIDE extends EditorColorScheme {
     return TextStyle.makeStyle(id, true);
   }
 
-  public static SchemeAndroidIDE newInstance(Context context) {
+  public static SchemeDevxyzIDE newInstance(Context context) {
     if (context == null) {
-      return new SchemeAndroidIDE();
+      return new SchemeDevxyzIDE();
     }
     final var scheme = new DynamicColorScheme();
     scheme.apply(context);

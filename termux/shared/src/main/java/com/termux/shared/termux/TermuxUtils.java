@@ -359,10 +359,10 @@ public class TermuxUtils {
         markdownString.append("\n\n### Email\n");
         markdownString.append("\n").append(MarkdownUtils.getLinkMarkdownString(TermuxConstants.TERMUX_SUPPORT_EMAIL_URL, TermuxConstants.TERMUX_SUPPORT_EMAIL_MAILTO_URL)).append("  ");
 
-        markdownString.append("\n\n### GitHub Issues for AndroidIDE apps\n");
+        markdownString.append("\n\n### GitHub Issues for DevxyzIDE apps\n");
         markdownString.append("\n").append(MarkdownUtils.getLinkMarkdownString(TermuxConstants.TERMUX_APP_NAME, TermuxConstants.TERMUX_GITHUB_ISSUES_REPO_URL)).append("  ");
 
-        markdownString.append("\n\n### GitHub Issues for AndroidIDE Terminal packages\n");
+        markdownString.append("\n\n### GitHub Issues for DevxyzIDE Terminal packages\n");
         markdownString.append("\n").append(MarkdownUtils.getLinkMarkdownString(TermuxConstants.TERMUX_PACKAGES_GITHUB_REPO_NAME, TermuxConstants.TERMUX_PACKAGES_GITHUB_ISSUES_REPO_URL)).append("  ");
 
         markdownString.append("\n##\n");
@@ -528,9 +528,9 @@ public class TermuxUtils {
         if (signingCertificateSHA256Digest == null) return "null";
 
         if (signingCertificateSHA256Digest
-            .equalsIgnoreCase(TermuxConstants.APK_RELEASE_ANDROIDIDE_SIGNING_CERTIFICATE_SHA256_DIGEST)
+            .equalsIgnoreCase(TermuxConstants.APK_RELEASE_DEVXYZIDE_SIGNING_CERTIFICATE_SHA256_DIGEST)
         ) {
-            return TermuxConstants.APK_RELEASE_ANDROIDIDE;
+            return TermuxConstants.APK_RELEASE_DEVXYZIDE;
         }
         if (signingCertificateSHA256Digest
             .equalsIgnoreCase(TermuxConstants.APK_RELEASE_FDROID_SIGNING_CERTIFICATE_SHA256_DIGEST)

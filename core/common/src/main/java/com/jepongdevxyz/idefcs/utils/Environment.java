@@ -1,18 +1,18 @@
 /*
- *  This file is part of AndroidIDE.
+ *  This file is part of DevxyzIDE.
  *
- *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  DevxyzIDE is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  AndroidIDE is distributed in the hope that it will be useful,
+ *  DevxyzIDE is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ *   along with DevxyzIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 package com.jepongdevxyz.idefcs.utils;
 
@@ -27,19 +27,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Map;
 import java.util.UUID;
 
 @SuppressLint("SdCardPath")
 public final class Environment {
 
-  public static final String PROJECTS_FOLDER = "AndroidIDEProjects";
+  public static final String PROJECTS_FOLDER = "DevxyzIDEProjects";
   private static final Logger LOG = LoggerFactory.getLogger(Environment.class);
   public static File ROOT;
   public static File PREFIX;
   public static File HOME;
-  public static File ANDROIDIDE_HOME;
-  public static File ANDROIDIDE_UI;
+  public static File DEVXYZIDE_HOME;
+  public static File DEVXYZIDE_UI;
   public static File JAVA_HOME;
   public static File ANDROID_HOME;
   public static File TMP_DIR;
@@ -66,19 +68,19 @@ public final class Environment {
     ROOT = context.getFilesDir();
     PREFIX = mkdirIfNotExits(new File(ROOT, "usr"));
     HOME = mkdirIfNotExits(new File(ROOT, "home"));
-    ANDROIDIDE_HOME = mkdirIfNotExits(new File(HOME, ".androidide"));
+    DEVXYZIDE_HOME = mkdirIfNotExits(new File(HOME, ".devxyzide"));
     TMP_DIR = mkdirIfNotExits(new File(PREFIX, "tmp"));
     BIN_DIR = mkdirIfNotExits(new File(PREFIX, "bin"));
     LIB_DIR = mkdirIfNotExits(new File(PREFIX, "lib"));
     PROJECTS_DIR = mkdirIfNotExits(new File(FileUtil.getExternalStorageDir(), PROJECTS_FOLDER));
-    ANDROID_JAR = mkdirIfNotExits(new File(ANDROIDIDE_HOME, "android.jar"));
-    TOOLING_API_JAR = new File(mkdirIfNotExits(new File(ANDROIDIDE_HOME, "tooling-api")),
+    ANDROID_JAR = mkdirIfNotExits(new File(DEVXYZIDE_HOME, "android.jar"));
+    TOOLING_API_JAR = new File(mkdirIfNotExits(new File(DEVXYZIDE_HOME, "tooling-api")),
       "tooling-api-all.jar");
-    AAPT2 = new File(ANDROIDIDE_HOME, "aapt2");
-    ANDROIDIDE_UI = mkdirIfNotExits(new File(ANDROIDIDE_HOME, "ui"));
+    AAPT2 = new File(DEVXYZIDE_HOME, "aapt2");
+    DEVXYZIDE_UI = mkdirIfNotExits(new File(DEVXYZIDE_HOME, "ui"));
     REALM_DB_DIR = mkdirIfNotExits(new File(ROOT, "realm-dbs"));
 
-    INIT_SCRIPT = new File(mkdirIfNotExits(new File(ANDROIDIDE_HOME, "init")), "init.gradle");
+    INIT_SCRIPT = new File(mkdirIfNotExits(new File(DEVXYZIDE_HOME, "init")), "init.gradle");
     GRADLE_USER_HOME = new File(HOME, ".gradle");
 
     ANDROID_HOME = new File(HOME, "android-sdk");
@@ -130,8 +132,75 @@ public final class Environment {
     }
   }
 
+    /**
+     * Copies the previous per-project IDE directory ({@code .androidide}) into the new
+     * per-project directory ({@code .devxyzide}) on first use, so an existing project
+     * setup survives the rename. The legacy directory is never deleted. The copy only
+     * runs when the new directory does not already contain any file, so it never
+     * overwrites an existing setup; a failure is logged and the new directory is
+     * returned anyway.
+     */
+    private static void migrateLegacyProjectCacheDir(File projectDir, File cacheDir) {
+        try {
+            File legacyCacheDir = new File(projectDir, ".androidide");
+            if (!legacyCacheDir.isDirectory()) {
+                return;
+            }
+            if (hasAnyFile(cacheDir)) {
+                return;
+            }
+            copyDirectory(legacyCacheDir, cacheDir);
+            LOG.info("Migrated legacy per-project IDE directory {} to {}", legacyCacheDir, cacheDir);
+        } catch (Exception e) {
+            LOG.warn("Failed to migrate legacy per-project IDE directory, continuing", e);
+        }
+    }
+
+    private static boolean hasAnyFile(File dir) {
+        if (dir == null || !dir.isDirectory()) {
+            return false;
+        }
+        File[] children = dir.listFiles();
+        if (children == null) {
+            return false;
+        }
+        for (File child : children) {
+            if (Files.isSymbolicLink(child.toPath()) || child.isFile() || hasAnyFile(child)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static void copyDirectory(File source, File target) throws IOException {
+        if (Files.isSymbolicLink(source.toPath())) {
+            return;
+        }
+        if (source.isDirectory()) {
+            if (!target.exists() && !target.mkdirs()) {
+                throw new IOException("Failed to create directory: " + target);
+            }
+            File[] children = source.listFiles();
+            if (children != null) {
+                for (File child : children) {
+                    copyDirectory(child, new File(target, child.getName()));
+                }
+            }
+            return;
+        }
+        if (!target.exists()) {
+            File parent = target.getParentFile();
+            if (parent != null && !parent.exists()) {
+                parent.mkdirs();
+            }
+            Files.copy(source.toPath(), target.toPath());
+        }
+    }
+
   public static File getProjectCacheDir(File projectDir) {
-    return new File(projectDir, ".androidide");
+    File cacheDir = new File(projectDir, ".devxyzide");
+    migrateLegacyProjectCacheDir(projectDir, cacheDir);
+    return cacheDir;
   }
 
   @NonNull

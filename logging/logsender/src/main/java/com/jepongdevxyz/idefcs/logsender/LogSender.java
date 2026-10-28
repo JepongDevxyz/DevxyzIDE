@@ -1,18 +1,18 @@
 /*
- *  This file is part of AndroidIDE.
+ *  This file is part of DevxyzIDE.
  *
- *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  DevxyzIDE is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  AndroidIDE is distributed in the hope that it will be useful,
+ *  DevxyzIDE is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ *   along with DevxyzIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 package com.jepongdevxyz.idefcs.logsender;
@@ -61,9 +61,9 @@ public final class LogSender extends ILogSender.Stub implements ServiceConnectio
   public static final String PACKAGE_UNKNOWN = "<unknown-package-name>";
 
   /**
-   * AndroidIDE's package name.
+   * DevxyzIDE's package name.
    */
-  public static final String PACKAGE_ANDROIDIDE = "com.jepongdevxyz.ide";
+  public static final String PACKAGE_DEVXYZIDE = "com.jepongdevxyz.ide";
 
   LogSender() {
     this.senderId = UUID.randomUUID().toString();
@@ -143,7 +143,7 @@ public final class LogSender extends ILogSender.Stub implements ServiceConnectio
   }
 
   /**
-   * @return Whether the log sender is bound to the log receiver service in AndroidIDE.
+   * @return Whether the log sender is bound to the log receiver service in DevxyzIDE.
    */
   boolean isBinding() {
     return isBinding.get();
@@ -157,7 +157,7 @@ public final class LogSender extends ILogSender.Stub implements ServiceConnectio
   }
 
   /**
-   * Binds to the log receiver service in AndroidIDE.
+   * Binds to the log receiver service in DevxyzIDE.
    *
    * @param context The context used to bind to the service.
    * @return Whether the binding was successful or not. This returns <code>true</code> if
@@ -176,14 +176,14 @@ public final class LogSender extends ILogSender.Stub implements ServiceConnectio
     }
 
     this.packageName = context.getPackageName();
-    if (PACKAGE_ANDROIDIDE.equals(packageName)) {
+    if (PACKAGE_DEVXYZIDE.equals(packageName)) {
       return false;
     }
 
     this.context = context;
 
     final Intent intent = new Intent(SERVICE_ACTION);
-    intent.setPackage(PACKAGE_ANDROIDIDE);
+    intent.setPackage(PACKAGE_DEVXYZIDE);
     isBinding.set(context.bindService(intent, this, Context.BIND_IMPORTANT | Context.BIND_AUTO_CREATE));
 
     if (isBinding()) {

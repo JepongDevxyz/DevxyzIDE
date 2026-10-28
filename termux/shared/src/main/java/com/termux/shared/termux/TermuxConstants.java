@@ -350,11 +350,11 @@ public final class TermuxConstants {
     public static final String TERMUX_GITHUB_ISSUES_REPO_URL = TERMUX_GITHUB_REPO_URL + "/issues"; // Default: "https://github.com/termux/termux-app/issues"
 
 
-    /** AndroidIDE APK release */
-    public static final String APK_RELEASE_ANDROIDIDE = "AndroidIDE"; // Default: "AndroidIDE"
+    /** DevxyzIDE APK release */
+    public static final String APK_RELEASE_DEVXYZIDE = "DevxyzIDE"; // Default: "DevxyzIDE"
 
-    /** AndroidIDE APK release signing certificate SHA-256 digest */
-    public static final String APK_RELEASE_ANDROIDIDE_SIGNING_CERTIFICATE_SHA256_DIGEST = "2DF2CBC1468CCB89DAD1733DC8E027BFF35EEEFA58C9EF35A5518A5D57912007"; // Default: "2DF2CBC1468CCB89DAD1733DC8E027BFF35EEEFA58C9EF35A5518A5D57912007"
+    /** DevxyzIDE APK release signing certificate SHA-256 digest */
+    public static final String APK_RELEASE_DEVXYZIDE_SIGNING_CERTIFICATE_SHA256_DIGEST = "2DF2CBC1468CCB89DAD1733DC8E027BFF35EEEFA58C9EF35A5518A5D57912007"; // Default: "2DF2CBC1468CCB89DAD1733DC8E027BFF35EEEFA58C9EF35A5518A5D57912007"
 
     /** F-Droid APK release */
     public static final String APK_RELEASE_FDROID = "F-Droid"; // Default: "F-Droid"

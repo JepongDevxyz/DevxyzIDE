@@ -1,6 +1,6 @@
 # External dependencies
 
-This directory contains external, non-Gradle dependencies that are required to build AndroidIDE.
+This directory contains external, non-Gradle dependencies that are required to build DevxyzIDE.
 
 ## Projects
 

@@ -1,18 +1,18 @@
 /*
- *  This file is part of AndroidIDE.
+ *  This file is part of DevxyzIDE.
  *
- *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  DevxyzIDE is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  AndroidIDE is distributed in the hope that it will be useful,
+ *  DevxyzIDE is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ *   along with DevxyzIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 package com.jepongdevxyz.idefcs.editor.adapters
 
@@ -41,11 +41,11 @@ import com.jepongdevxyz.idefcs.preferences.internal.EditorPreferences
 import com.jepongdevxyz.idefcs.resources.R.string.msg_api_info_deprecated
 import com.jepongdevxyz.idefcs.resources.R.string.msg_api_info_removed
 import com.jepongdevxyz.idefcs.resources.R.string.msg_api_info_since
-import com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeAndroidIDE
-import com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeAndroidIDE.COMPLETION_WND_TEXT_API
-import com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeAndroidIDE.COMPLETION_WND_TEXT_DETAIL
-import com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeAndroidIDE.COMPLETION_WND_TEXT_LABEL
-import com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeAndroidIDE.COMPLETION_WND_TEXT_TYPE
+import com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeDevxyzIDE
+import com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeDevxyzIDE.COMPLETION_WND_TEXT_API
+import com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeDevxyzIDE.COMPLETION_WND_TEXT_DETAIL
+import com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeDevxyzIDE.COMPLETION_WND_TEXT_LABEL
+import com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeDevxyzIDE.COMPLETION_WND_TEXT_TYPE
 import com.jepongdevxyz.idefcs.tasks.executeAsync
 import com.jepongdevxyz.idefcs.utils.customOrJBMono
 import com.jepongdevxyz.idefcs.xml.versions.ApiVersions
@@ -126,7 +126,7 @@ class CompletionListAdapter : EditorCompletionAdapter() {
 
   private fun setItemBackground(binding: LayoutCompletionItemBinding, isCurrent: Boolean) {
     val color =
-      if (isCurrent) getThemeColor(SchemeAndroidIDE.COMPLETION_WND_BG_CURRENT_ITEM)
+      if (isCurrent) getThemeColor(SchemeDevxyzIDE.COMPLETION_WND_BG_CURRENT_ITEM)
       else 0
 
     val cornerRadius = binding.root.context.resources

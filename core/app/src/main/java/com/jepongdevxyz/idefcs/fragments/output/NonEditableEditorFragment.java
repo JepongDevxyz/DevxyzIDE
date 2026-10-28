@@ -1,18 +1,18 @@
 /*
- *  This file is part of AndroidIDE.
+ *  This file is part of DevxyzIDE.
  *
- *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  DevxyzIDE is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  AndroidIDE is distributed in the hope that it will be useful,
+ *  DevxyzIDE is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ *   along with DevxyzIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 package com.jepongdevxyz.idefcs.fragments.output;
@@ -25,7 +25,7 @@ import com.jepongdevxyz.idefcs.R;
 import com.jepongdevxyz.idefcs.databinding.FragmentNonEditableEditorBinding;
 import com.jepongdevxyz.idefcs.editor.ui.IDEEditor;
 import com.jepongdevxyz.idefcs.fragments.EmptyStateFragment;
-import com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeAndroidIDE;
+import com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeDevxyzIDE;
 import com.jepongdevxyz.idefcs.utils.TypefaceUtilsKt;
 import io.github.rosemoe.sora.lang.EmptyLanguage;
 
@@ -50,7 +50,7 @@ public abstract class NonEditableEditorFragment extends
     editor.setTypefaceLineNumber(TypefaceUtilsKt.jetbrainsMono());
     editor.setTypefaceText(TypefaceUtilsKt.jetbrainsMono());
     editor.setTextSize(12);
-    editor.setColorScheme(SchemeAndroidIDE.newInstance(requireContext()));
+    editor.setColorScheme(SchemeDevxyzIDE.newInstance(requireContext()));
   }
 
   private CharSequence createEmptyStateMessage() {
