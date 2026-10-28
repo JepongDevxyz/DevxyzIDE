@@ -104,17 +104,20 @@ class AndroidIDEAssetsPlugin : Plugin<Project> {
         // Local Gradle plugin JAR/POM copiers. The plugin jar and its generated
         // pom are bundled as assets so the IDE can resolve the build plugin
         // from the device instead of a remote repository.
+        // Use lazy task providers: :tooling:plugin may not be evaluated yet
+        // when the app variants are configured, so looking the tasks up
+        // eagerly with getByName fails with "Task with name 'jar' not found".
         val localPluginProject = checkNotNull(rootProject.findProject(":tooling:plugin")) {
           "Cannot find the Tooling Plugin module with project path: ':tooling:plugin'"
         }
-        val localPluginJarTask = localPluginProject.tasks.getByName("jar") as Jar
-        val localPluginPomTask = localPluginProject.tasks.getByName(
-          "generatePomFileForMavenPublication") as GenerateMavenPom
+        val localPluginJarTask = localPluginProject.tasks.named("jar", Jar::class.java)
+        val localPluginPomTask = localPluginProject.tasks.named(
+          "generatePomFileForMavenPublication", GenerateMavenPom::class.java)
 
         val copyLocalPluginJar = tasks.register("copy${variantNameCapitalized}LocalPluginJar",
           AddFileToAssetsTask::class.java) {
           dependsOn(localPluginJarTask)
-          inputFile.set(localPluginJarTask.archiveFile)
+          inputFile.set(localPluginJarTask.flatMap { it.archiveFile })
           fileName.set("gradle-plugin.jar")
           baseAssetsPath.set("data/common/local-plugin")
         }
@@ -125,7 +128,7 @@ class AndroidIDEAssetsPlugin : Plugin<Project> {
         val copyLocalPluginPom = tasks.register("copy${variantNameCapitalized}LocalPluginPom",
           AddFileToAssetsTask::class.java) {
           dependsOn(localPluginPomTask)
-          inputFile.set(localPluginPomTask.destination)
+          inputFile.set(localPluginPomTask.flatMap { it.destination })
           fileName.set("gradle-plugin.pom")
           baseAssetsPath.set("data/common/local-plugin")
         }
