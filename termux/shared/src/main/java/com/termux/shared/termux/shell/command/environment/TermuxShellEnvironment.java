@@ -81,6 +81,8 @@ public class TermuxShellEnvironment extends AndroidShellEnvironment {
             environment.put(ENV_TMPDIR, TermuxConstants.TERMUX_TMP_PREFIX_DIR_PATH);
             environment.put(ENV_PATH, TermuxConstants.TERMUX_BIN_PREFIX_DIR_PATH + String.format(":%s/cmdline-tools/latest/bin", ANDROID_HOME.getAbsolutePath()));
             environment.put(ENV_LD_LIBRARY_PATH, TermuxConstants.TERMUX_PREFIX_DIR_PATH + "/lib");
+            environment.put("CURL_CA_BUNDLE", TermuxConstants.TERMUX_PREFIX_DIR_PATH + "/etc/tls/cert.pem");
+            environment.put("SSL_CERT_FILE", TermuxConstants.TERMUX_PREFIX_DIR_PATH + "/etc/tls/cert.pem");
         }
 
         return environment;
