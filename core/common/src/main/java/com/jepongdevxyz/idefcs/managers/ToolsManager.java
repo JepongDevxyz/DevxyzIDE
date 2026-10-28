@@ -209,25 +209,17 @@ public class ToolsManager {
   }
 
   /**
-   * Extracts the bundled Gradle plugin jar and pom into a local Maven
-   * repository layout under HOME/.androidide/local-plugin-repo. The group and
-   * version are parsed from the classpath line in the generated init script
-   * asset, so they are never hardcoded here. Extraction is skipped only when
-   * both files already exist at exactly that version path.
+   * Extracts one bundled module's jar and pom into a local Maven
+   * repository layout under HOME/.androidide/local-plugin-repo.
+   * The module is skipped only when both files already exist at
+   * exactly that version path.
+   * See extractLocalPluginRepo for the modules that are extracted.
    */
-  private static void extractLocalPluginRepo() {
-    final Matcher matcher = Pattern.compile("classpath\\('([^:]+):gradle-plugin:([^']+)'\\)")
-        .matcher(readInitScript());
-    if (!matcher.find()) {
-      LOG.error("Could not find the Gradle plugin classpath in the init script");
-      return;
-    }
-    final var group = matcher.group(1);
-    final var version = matcher.group(2);
+  private static void extractLocalPluginModule(String group, String artifact, String version) {
     final var versionDir = new File(getLocalPluginRepoDir(),
-        group.replace('.', '/') + "/gradle-plugin/" + version);
-    final var jarFile = new File(versionDir, "gradle-plugin-" + version + ".jar");
-    final var pomFile = new File(versionDir, "gradle-plugin-" + version + ".pom");
+        group.replace('.', '/') + "/" + artifact + "/" + version);
+    final var jarFile = new File(versionDir, artifact + "-" + version + ".jar");
+    final var pomFile = new File(versionDir, artifact + "-" + version + ".pom");
     if (jarFile.exists() && pomFile.exists()) {
       return;
     }
@@ -236,16 +228,16 @@ public class ToolsManager {
       return;
     }
     if (!jarFile.exists()) {
-      ResourceUtils.copyFileFromAssets(getCommonAsset("local-plugin/gradle-plugin.jar"),
+      ResourceUtils.copyFileFromAssets(getCommonAsset("local-plugin/" + artifact + ".jar"),
           jarFile.getAbsolutePath());
     }
     if (!pomFile.exists()) {
-      ResourceUtils.copyFileFromAssets(getCommonAsset("local-plugin/gradle-plugin.pom"),
+      ResourceUtils.copyFileFromAssets(getCommonAsset("local-plugin/" + artifact + ".pom"),
           pomFile.getAbsolutePath());
     }
   }
 
-  private static File getLocalPluginRepoDir() {
+  /** Extracts the bundled plugin and its plugin-config and build-info dependencies, parsing the group, artifact and version from the init script classpath line. */ private static void extractLocalPluginRepo() { final Matcher matcher = Pattern.compile("classpath\('([^:]+):([^:]+):([^']+)'\)").matcher(readInitScript()); if (!matcher.find()) { LOG.error("Could not find the Gradle plugin classpath in the init script"); return; } extractLocalPluginModule(matcher.group(1), matcher.group(2), matcher.group(3)); extractLocalPluginModule("com.jepongdevxyz.idefcs.tooling", "plugin-config", matcher.group(3)); extractLocalPluginModule("com.jepongdevxyz.idefcs.utilities", "build-info", matcher.group(3)); } private static File getLocalPluginRepoDir() {
     return new File(Environment.ANDROIDIDE_HOME, "local-plugin-repo");
   }
 
