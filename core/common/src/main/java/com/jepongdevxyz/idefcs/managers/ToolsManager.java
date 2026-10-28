@@ -39,6 +39,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import kotlin.io.ConstantsKt;
 import kotlin.io.FilesKt;
@@ -63,6 +65,7 @@ public class ToolsManager {
       writeNoMediaFile();
       extractAapt2();
       extractToolingApi();
+      extractLocalPluginRepo();
       extractAndroidJar();
       extractColorScheme(app);
       writeInitScript();
@@ -205,15 +208,63 @@ public class ToolsManager {
         Environment.TOOLING_API_JAR.getAbsolutePath());
   }
 
+  /**
+   * Extracts the bundled Gradle plugin jar and pom into a local Maven
+   * repository layout under HOME/.androidide/local-plugin-repo. The group and
+   * version are parsed from the classpath line in the generated init script
+   * asset, so they are never hardcoded here. Extraction is skipped only when
+   * both files already exist at exactly that version path.
+   */
+  private static void extractLocalPluginRepo() {
+    final Matcher matcher = Pattern.compile("classpath\\('([^:]+):gradle-plugin:([^']+)'\\)")
+        .matcher(readInitScript());
+    if (!matcher.find()) {
+      LOG.error("Could not find the Gradle plugin classpath in the init script");
+      return;
+    }
+    final var group = matcher.group(1);
+    final var version = matcher.group(2);
+    final var versionDir = new File(getLocalPluginRepoDir(),
+        group.replace('.', '/') + "/gradle-plugin/" + version);
+    final var jarFile = new File(versionDir, "gradle-plugin-" + version + ".jar");
+    final var pomFile = new File(versionDir, "gradle-plugin-" + version + ".pom");
+    if (jarFile.exists() && pomFile.exists()) {
+      return;
+    }
+    if (!versionDir.exists() && !versionDir.mkdirs()) {
+      LOG.error("Failed to create local plugin repository directory: {}", versionDir);
+      return;
+    }
+    if (!jarFile.exists()) {
+      ResourceUtils.copyFileFromAssets(getCommonAsset("local-plugin/gradle-plugin.jar"),
+          jarFile.getAbsolutePath());
+    }
+    if (!pomFile.exists()) {
+      ResourceUtils.copyFileFromAssets(getCommonAsset("local-plugin/gradle-plugin.pom"),
+          pomFile.getAbsolutePath());
+    }
+  }
+
+  private static File getLocalPluginRepoDir() {
+    return new File(Environment.ANDROIDIDE_HOME, "local-plugin-repo");
+  }
+
+  private static String getLocalPluginRepoUri() {
+    var uri = getLocalPluginRepoDir().toURI().toString();
+    if (!uri.endsWith("/")) {
+      uri += "/";
+    }
+    return uri;
+  }
+
   private static void writeInitScript() {
     final var initScript = Environment.INIT_SCRIPT;
     final var initScriptBak = new File(initScript.getParentFile(), initScript.getName() + ".bak");
-    final var contents = readInitScript();
+    final var contents = readInitScript().replace("@LOCAL_PLUGIN_REPO_URL@",
+        getLocalPluginRepoUri());
 
     FilesKt.writeText(initScriptBak, contents, StandardCharsets.UTF_8);
-    if (!initScript.exists()) {
-      FilesKt.writeText(initScript, contents, StandardCharsets.UTF_8);
-    }
+    FilesKt.writeText(initScript, contents, StandardCharsets.UTF_8);
   }
 
   @NonNull
