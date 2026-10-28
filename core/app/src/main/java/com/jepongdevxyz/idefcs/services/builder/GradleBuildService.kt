@@ -46,6 +46,8 @@ import com.jepongdevxyz.idefcs.tooling.api.IProject
 import com.jepongdevxyz.idefcs.tooling.api.IToolingApiClient
 import com.jepongdevxyz.idefcs.tooling.api.IToolingApiServer
 import com.jepongdevxyz.idefcs.tooling.api.LogSenderConfig.PROPERTY_LOGSENDER_ENABLED
+import com.jepongdevxyz.idefcs.tooling.api.LogSenderConfig._PROPERTY_IS_TEST_ENV
+import com.jepongdevxyz.idefcs.tooling.api.LogSenderConfig._PROPERTY_MAVEN_LOCAL_REPOSITORY
 import com.jepongdevxyz.idefcs.tooling.api.messages.InitializeProjectParams
 import com.jepongdevxyz.idefcs.tooling.api.messages.LogMessageParams
 import com.jepongdevxyz.idefcs.tooling.api.messages.TaskExecutionMessage
@@ -310,6 +312,13 @@ class GradleBuildService : Service(), BuildService, IToolingApiClient,
     if (BuildPreferences.isOfflineEnabled) {
       extraArgs.add("--offline")
     }
+      val localPluginRepo = File(Environment.DEVXYZIDE_HOME, "local-plugin-repo")
+      if (localPluginRepo.isDirectory) {
+            extraArgs.add("-P" + _PROPERTY_IS_TEST_ENV + "=true")
+            extraArgs.add("-P" + _PROPERTY_MAVEN_LOCAL_REPOSITORY + "=" + localPluginRepo.absolutePath)
+      } else {
+            log.error("Local plugin repository is missing: {}", localPluginRepo.absolutePath)
+      }
     return CompletableFuture.completedFuture(extraArgs)
   }
 
