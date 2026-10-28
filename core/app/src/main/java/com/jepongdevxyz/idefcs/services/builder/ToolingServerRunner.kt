@@ -105,7 +105,7 @@ internal class ToolingServerRunner(
         // error stream is used to read the server logs
         this.redirectErrorStream = false
         this.workingDirectory = null // HOME
-        this.environment = envs + ("TMPDIR" to Environment.TMP_DIR.absolutePath) + ("LD_LIBRARY_PATH" to Environment.PREFIX.absolutePath + "/lib")
+        this.environment = envs + ("TMPDIR" to Environment.TMP_DIR.absolutePath) + ("LD_LIBRARY_PATH" to Environment.PREFIX.absolutePath + "/lib") + ("CURL_CA_BUNDLE" to Environment.PREFIX.absolutePath + "/etc/tls/cert.pem") + ("SSL_CERT_FILE" to Environment.PREFIX.absolutePath + "/etc/tls/cert.pem")
       }
 
       pid = ReflectionUtils.getDeclaredField(process::class.java, "pid")?.get(process) as Int?
