@@ -53,8 +53,12 @@ abstract class GenerateInitScriptTask : DefaultTask() {
         """
       initscript {
           repositories {
+              // Always specify the local plugin repository first
+              maven {
+                  // Local plugin repository bundled with the IDE
+                  url "@LOCAL_PLUGIN_REPO_URL@"
+              }
               
-              // Always specify the snapshots repository first
               maven {
                   // Add snapshots repository for AndroidIDE CI builds
                   url "${VersionUtils.SONATYPE_SNAPSHOTS_REPO}"
