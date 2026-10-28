@@ -162,6 +162,101 @@ download_comp() {
   download_and_extract "$nm" "$url" "$mdir" "$mdir/$dname.tar.xz"
 }
 
+# pkg_usable <name>: 0 if the package's files/commands appear present and usable.
+# Unlike dpkg -s, this does not trust dpkg status, which returns success for
+# packages that are merely known but not installed, and says nothing about
+# packages installed by extraction (which dpkg never registers).
+pkg_usable() {
+  case "$1" in
+    openjdk-17|openjdk-21)
+      [ -x "${SYSROOT:-$PREFIX}/opt/openjdk/bin/java" ]
+      ;;
+    libcurl)
+      ls "$PREFIX/lib"/libcurl.so* >/dev/null 2>&1
+      ;;
+    openssh)
+      command -v ssh >/dev/null 2>&1
+      ;;
+    *)
+      command -v "$1" >/dev/null 2>&1
+      ;;
+  esac
+}
+
+# install_deb_extract <deb_path> <deb_file>: downloads a .deb via curl (if not
+# already present), extracts it with dpkg-deb -x, and copies its contents into
+# $PREFIX, translating the old com.itsaky.androidide prefix to the DevxyzIDE
+# prefix. This bypasses dpkg -i, which fails with Permission denied because
+# the .debs contain hardcoded com.itsaky.androidide paths.
+install_deb_extract() {
+  deb_path="$1"
+  deb_file="$2"
+  if [ ! -f "$deb_file" ]; then
+    print_info "Downloading $deb_file..."
+    if ! curl -fL -O "https://packages.androidide.com/apt/termux-main/$deb_path"; then
+      print_err "Failed to download $deb_file via curl."
+      return 1
+    fi
+  fi
+  deb_extract_dir="${deb_file%.deb}_extract"
+  rm -rf "$deb_extract_dir"
+  if ! dpkg-deb -x "$deb_file" "$deb_extract_dir"; then
+    print_err "Failed to extract $deb_file."
+    return 1
+  fi
+  itsaky_root="$deb_extract_dir/data/data/com.itsaky.androidide/files/usr"
+  if [ -d "$itsaky_root" ]; then
+    cp -a "$itsaky_root/." "$PREFIX/"
+  else
+    cp -a "$deb_extract_dir/." "$PREFIX/"
+  fi
+  print_success "Installed $deb_file via extraction."
+  return 0
+}
+
+# finalize_jdk: renames a versioned JDK dir (e.g. opt/openjdk-17.0) to the
+# unversioned path the IDE expects ($SYSROOT/opt/openjdk), copies libz into
+# the JDK lib dir (the Android linker does not search $PREFIX/lib on its own),
+# and returns 0 iff the JDK binary is executable.
+finalize_jdk() {
+  jdk_target="${SYSROOT:-$PREFIX}/opt/openjdk"
+  if [ ! -x "$jdk_target/bin/java" ]; then
+    for jdk_candidate in "$PREFIX/opt/openjdk-17.0" "$PREFIX/opt/openjdk-17" "$PREFIX/opt/openjdk-$jdk_version"; do
+      if [ -x "$jdk_candidate/bin/java" ]; then
+        mkdir -p "$PREFIX/opt"
+        rm -rf "$jdk_target"
+        cp -a "$jdk_candidate" "$jdk_target"
+        break
+      fi
+    done
+  fi
+  if [ -e "$PREFIX/lib/libz.so.1" ] || [ -e "$PREFIX/lib/libz.so.1.3" ]; then
+    cp -a "$PREFIX/lib"/libz.so.1* "$jdk_target/lib/" 2>/dev/null || true
+  fi
+  [ -x "$jdk_target/bin/java" ]
+}
+
+# install_jdk_extract: installs OpenJDK 17 + zlib via direct .deb extraction
+# (bypasses apt and the dpkg -i prefix problem), finalizes the JDK layout,
+# and returns 0 iff the JDK binary is executable. Only 17 is available via
+# this path; 21 must come from apt.
+install_jdk_extract() {
+  jdk_work_dir="$PREFIX/tmp/jdkdl"
+  mkdir -p "$jdk_work_dir"
+  jdk_work_start="$(pwd)"
+  cd "$jdk_work_dir" || return 1
+  if ! install_deb_extract "dists/stable/main/binary-aarch64/openjdk-17_17.0-30_aarch64.deb" "openjdk-17_17.0-30_aarch64.deb"; then
+    cd "$jdk_work_start" || true
+    return 1
+  fi
+  if ! install_deb_extract "dists/stable/main/binary-aarch64/zlib_1.3-3_aarch64.deb" "zlib_1.3-3_aarch64.deb"; then
+    cd "$jdk_work_start" || true
+    return 1
+  fi
+  cd "$jdk_work_start" || true
+  finalize_jdk
+}
+
 while [ $# -gt 0 ]; do
   case $1 in
   -c | --with-cmdline-tools)
@@ -296,22 +391,32 @@ if ! "$pkgm" update; then
 fi
 if [ "$apt_update_ok" = "true" ]; then
   if [ "$assume_yes" == "true" ]; then
-    $pkgm upgrade -y
+    $pkgm upgrade -y || apt_update_ok=false
   else
-    $pkgm upgrade
+    $pkgm upgrade || apt_update_ok=false
   fi
-  print_info "Installing required packages.."
-  install_packages $pkgs && print_success "Packages installed"
+  if [ "$apt_update_ok" = "true" ]; then
+    print_info "Installing required packages.."
+    if install_packages $pkgs; then
+      print_success "Packages installed"
+    else
+      apt_update_ok=false
+    fi
+  fi
   echo ""
-else
-  print_warn "WARNING: apt update failed with 400 Bad Request from packages.androidide.com. Setup will continue via curl+dpkg bypass."
+fi
+if [ "$apt_update_ok" = "false" ]; then
+  print_warn "WARNING: apt update failed with 400 Bad Request from packages.androidide.com. Setup will continue via curl+extract bypass."
   print_warn "apt update failed, so required packages will be installed from .deb files downloaded with curl instead of apt."
   apt_bypass_needed=false
-  for apt_bypass_pkg in jq tar git openssh libcurl openjdk-17; do
-    if ! dpkg -s "$apt_bypass_pkg" >/dev/null 2>&1; then
+  for apt_bypass_pkg in jq tar git openssh libcurl; do
+    if ! pkg_usable "$apt_bypass_pkg"; then
       apt_bypass_needed=true
     fi
   done
+  if [ ! -x "${SYSROOT:-$PREFIX}/opt/openjdk/bin/java" ]; then
+    apt_bypass_needed=true
+  fi
   if [ "$apt_bypass_needed" = "true" ]; then
     apt_bypass_dir="$PREFIX/tmp/aptbypass"
     apt_bypass_start_dir="$(pwd)"
@@ -347,31 +452,22 @@ else
       dists/stable/main/binary-aarch64/tar_1.35_aarch64.deb \
       dists/stable/main/binary-aarch64/termux-auth_1.4-2_aarch64.deb \
       dists/stable/main/binary-aarch64/zlib_1.3-3_aarch64.deb; do
-      echo "Downloading $apt_bypass_file..."
-      if ! curl -fL -O "https://packages.androidide.com/apt/termux-main/$apt_bypass_file"; then
-        print_err "Failed to download $apt_bypass_file via curl. Aborting curl+dpkg bypass."
+      deb_name=$(basename "$apt_bypass_file")
+      if ! install_deb_extract "$apt_bypass_file" "$deb_name"; then
+        print_err "Aborting curl+extract bypass."
         exit 1
       fi
     done
-    apt_bypass_count=$(ls *.deb 2>/dev/null | wc -l)
-    if [ "$apt_bypass_count" -ne 28 ]; then
-      print_err "Expected 28 .deb files for curl+dpkg bypass but found $apt_bypass_count. Aborting."
-      exit 1
-    fi
-    if ! dpkg -i *.deb; then
-      print_err "dpkg install failed for curl+dpkg bypass packages. Aborting."
-      exit 1
-    fi
     cd "$apt_bypass_start_dir"
-    for apt_bypass_pkg in jq tar git openssh libcurl openjdk-17; do
-      if ! dpkg -s "$apt_bypass_pkg" >/dev/null 2>&1; then
-        print_err "Required package $apt_bypass_pkg is still missing after curl+dpkg bypass. Aborting."
-        exit 1
-      fi
-    done
-    print_success "curl+dpkg bypass installed all required packages."
+    if finalize_jdk; then
+      print_success "curl+extract bypass installed all required packages."
+    else
+      print_err "JDK binary still missing after curl+extract bypass. Aborting."
+      exit 1
+    fi
+    rm -rf "$apt_bypass_dir" || true
   else
-    print_info "All required packages are already installed. Skipping curl+dpkg bypass download."
+    print_info "All required packages are already installed. Skipping curl+extract bypass download."
   fi
   echo ""
 fi
@@ -396,11 +492,34 @@ if [ "$with_cmdline" = true ]; then
 fi
 
 # Install JDK
+# The JDK is usable iff its binary exists and runs; dpkg status is NOT
+# trusted here (it reports success for known-but-not-installed packages).
 print_info "Installing package: 'openjdk-$jdk_version'"
-if dpkg -s "openjdk-$jdk_version" >/dev/null 2>&1; then
+jdk_bin="${SYSROOT:-$PREFIX}/opt/openjdk/bin/java"
+if [ -x "$jdk_bin" ]; then
   print_info "JDK $jdk_version is already installed."
 else
-  install_packages "openjdk-$jdk_version" && print_info "JDK $jdk_version has been installed."
+  if [ "$apt_update_ok" = "true" ]; then
+    install_packages "openjdk-$jdk_version" || true
+  fi
+  if [ ! -x "$jdk_bin" ]; then
+    if [ "$jdk_version" = "17" ]; then
+      print_info "JDK binary not found. Installing OpenJDK 17 via direct .deb extraction..."
+      if ! install_jdk_extract; then
+        print_err "Failed to install JDK 17 via direct .deb extraction."
+        exit 1
+      fi
+    else
+      print_err "OpenJDK $jdk_version binary not found and it is not available via the direct-download fallback (only 17 is bundled). Fix apt or install it manually."
+      exit 1
+    fi
+  fi
+  if [ -x "$jdk_bin" ]; then
+    print_info "JDK $jdk_version has been installed."
+  else
+    print_err "JDK $jdk_version could not be installed."
+    exit 1
+  fi
 fi
 
 jdk_dir="$SYSROOT/opt/openjdk"
