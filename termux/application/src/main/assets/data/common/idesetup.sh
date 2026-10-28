@@ -478,6 +478,8 @@ if [ "$apt_update_ok" = "false" ]; then
     done
     # Deb binaries carry the old com.itsaky.androidide RUNPATH, so make dpkg-deb and tar find libraries in the IDE prefix lib. LD_LIBRARY_PATH takes precedence over RUNPATH.
 export LD_LIBRARY_PATH="$PREFIX/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+export CURL_CA_BUNDLE="$PREFIX/etc/tls/cert.pem"
+export SSL_CERT_FILE="$PREFIX/etc/tls/cert.pem"
 # Phase 2: extract all downloaded .deb files.
     for deb_file in *.deb; do
     if ! install_deb_extract "$deb_file" "$deb_file"; then
