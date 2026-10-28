@@ -18,7 +18,6 @@
 package com.jepongdevxyz.idefcs.plugins
 
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
-import com.jepongdevxyz.idefcs.build.config.BuildConfig
 import com.jepongdevxyz.idefcs.build.config.downloadVersion
 import com.jepongdevxyz.idefcs.plugins.tasks.AddAndroidJarToAssetsTask
 import com.jepongdevxyz.idefcs.plugins.tasks.AddFileToAssetsTask
@@ -47,11 +46,14 @@ class AndroidIDEAssetsPlugin : Plugin<Project> {
 
   override fun apply(target: Project) {
     target.run {
-      // :tooling:plugin is not a dependency of the app, so without this it
-      // is evaluated after the app project. Its jar and pom tasks must
+      // :tooling:plugin, :tooling:plugin-config and :utilities:build-info
+      // are not dependencies of the app, so without this they are
+      // evaluated after the app project. Their jar and pom tasks must
       // already exist when the app variants are configured, otherwise
       // looking them up fails with "Task with name 'jar' not found".
       evaluationDependsOn(":tooling:plugin")
+      evaluationDependsOn(":tooling:plugin-config")
+      evaluationDependsOn(":utilities:build-info")
 
       val wrapperGeneratorTaskProvider = tasks.register("generateGradleWrapper",
         GradleWrapperGeneratorTask::class.java)
@@ -79,10 +81,26 @@ class AndroidIDEAssetsPlugin : Plugin<Project> {
         variant.sources.assets?.addGeneratedSourceDirectory(addAndroidJarTaskProvider,
           AddAndroidJarToAssetsTask::outputDirectory)
 
-        // Init script generator
+        // Local plugin projects, looked up early so their actual group
+        // and name can be passed to the init script generator.
+        val localPluginProject = checkNotNull(rootProject.findProject(":tooling:plugin")) {
+          "Cannot find the Tooling Plugin module with project path: ':tooling:plugin'"
+        }
+        val pluginConfigProject = checkNotNull(rootProject.findProject(":tooling:plugin-config")) {
+          "Cannot find the Tooling Plugin Config module with project path: ':tooling:plugin-config'"
+        }
+        val buildInfoProject = checkNotNull(rootProject.findProject(":utilities:build-info")) {
+          "Cannot find the Build Info module with project path: ':utilities:build-info'"
+        }
+
+        // Init script generator. The classpath uses the :tooling:plugin
+        // project's true publication coordinates (its group and name, as
+        // used by MavenPublishConf), not the app package name and not a
+        // hardcoded artifact name.
         val generateInitScript = tasks.register("generate${variantNameCapitalized}InitScript",
           GenerateInitScriptTask::class.java) {
-          mavenGroupId.set(BuildConfig.packageName)
+          mavenGroupId.set(localPluginProject.group.toString())
+          mavenArtifactId.set(localPluginProject.name)
           downloadVersion.set(this@run.downloadVersion)
         }
 
@@ -112,9 +130,6 @@ class AndroidIDEAssetsPlugin : Plugin<Project> {
         // from the device instead of a remote repository.
         // Use lazy task providers for the plugin tasks, which exist by now
         // because :tooling:plugin is evaluated before the app (see above).
-        val localPluginProject = checkNotNull(rootProject.findProject(":tooling:plugin")) {
-          "Cannot find the Tooling Plugin module with project path: ':tooling:plugin'"
-        }
         val localPluginJarTask = localPluginProject.tasks.named("jar", Jar::class.java)
         // The java-gradle-plugin names its publication "pluginMaven", so
         // its generated pom task is generatePomFileForPluginMavenPublication,
@@ -126,7 +141,7 @@ class AndroidIDEAssetsPlugin : Plugin<Project> {
           AddFileToAssetsTask::class.java) {
           dependsOn(localPluginJarTask)
           inputFile.set(localPluginJarTask.flatMap { it.archiveFile })
-          fileName.set("gradle-plugin.jar")
+          fileName.set("plugin.jar")
           baseAssetsPath.set("data/common/local-plugin")
         }
 
@@ -143,11 +158,75 @@ class AndroidIDEAssetsPlugin : Plugin<Project> {
           AddFileToAssetsTask::class.java) {
           dependsOn(localPluginPomTask)
           inputFile.set(localPluginPomFile)
-          fileName.set("gradle-plugin.pom")
+          fileName.set("plugin.pom")
           baseAssetsPath.set("data/common/local-plugin")
         }
 
         variant.sources.assets?.addGeneratedSourceDirectory(copyLocalPluginPom,
+          AddFileToAssetsTask::outputDirectory)
+
+        // Plugin-config JAR/POM copiers. :tooling:plugin declares a runtime
+        // dependency on :tooling:plugin-config, so its jar and pom must be
+        // bundled too, under distinct asset names.
+        val pluginConfigJarTask = pluginConfigProject.tasks.named("jar", Jar::class.java)
+        val pluginConfigPomTask = pluginConfigProject.tasks.named(
+          "generatePomFileForMavenPublication", GenerateMavenPom::class.java)
+
+        val copyPluginConfigJar = tasks.register("copy${variantNameCapitalized}PluginConfigJar",
+          AddFileToAssetsTask::class.java) {
+          dependsOn(pluginConfigJarTask)
+          inputFile.set(pluginConfigJarTask.flatMap { it.archiveFile })
+          fileName.set("plugin-config.jar")
+          baseAssetsPath.set("data/common/local-plugin")
+        }
+
+        variant.sources.assets?.addGeneratedSourceDirectory(copyPluginConfigJar,
+          AddFileToAssetsTask::outputDirectory)
+
+        val pluginConfigPomFile = pluginConfigProject.layout.file(
+          pluginConfigPomTask.map { it.destination })
+
+        val copyPluginConfigPom = tasks.register("copy${variantNameCapitalized}PluginConfigPom",
+          AddFileToAssetsTask::class.java) {
+          dependsOn(pluginConfigPomTask)
+          inputFile.set(pluginConfigPomFile)
+          fileName.set("plugin-config.pom")
+          baseAssetsPath.set("data/common/local-plugin")
+        }
+
+        variant.sources.assets?.addGeneratedSourceDirectory(copyPluginConfigPom,
+          AddFileToAssetsTask::outputDirectory)
+
+        // Build-info JAR/POM copiers. :tooling:plugin declares a runtime
+        // dependency on :utilities:build-info, so its jar and pom must be
+        // bundled too, under distinct asset names.
+        val buildInfoJarTask = buildInfoProject.tasks.named("jar", Jar::class.java)
+        val buildInfoPomTask = buildInfoProject.tasks.named(
+          "generatePomFileForMavenPublication", GenerateMavenPom::class.java)
+
+        val copyBuildInfoJar = tasks.register("copy${variantNameCapitalized}BuildInfoJar",
+          AddFileToAssetsTask::class.java) {
+          dependsOn(buildInfoJarTask)
+          inputFile.set(buildInfoJarTask.flatMap { it.archiveFile })
+          fileName.set("build-info.jar")
+          baseAssetsPath.set("data/common/local-plugin")
+        }
+
+        variant.sources.assets?.addGeneratedSourceDirectory(copyBuildInfoJar,
+          AddFileToAssetsTask::outputDirectory)
+
+        val buildInfoPomFile = buildInfoProject.layout.file(
+          buildInfoPomTask.map { it.destination })
+
+        val copyBuildInfoPom = tasks.register("copy${variantNameCapitalized}BuildInfoPom",
+          AddFileToAssetsTask::class.java) {
+          dependsOn(buildInfoPomTask)
+          inputFile.set(buildInfoPomFile)
+          fileName.set("build-info.pom")
+          baseAssetsPath.set("data/common/local-plugin")
+        }
+
+        variant.sources.assets?.addGeneratedSourceDirectory(copyBuildInfoPom,
           AddFileToAssetsTask::outputDirectory)
 
         // Local plugin version file. The version is the same downloadVersion
