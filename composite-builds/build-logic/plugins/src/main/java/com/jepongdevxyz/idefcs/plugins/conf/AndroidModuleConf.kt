@@ -102,7 +102,7 @@ fun Project.configureAndroidModule(
     defaultConfig {
       minSdk = BuildConfig.minSdk
       targetSdk = BuildConfig.targetSdk
-      versionCode = 165
+      versionCode = 166
       versionName = "1.6.2.2204"
 
       // required
@@ -148,7 +148,7 @@ fun Project.configureAndroidModule(
             )?.identifier]
               ?: throw UnsupportedOperationException("Universal APKs are not supported!")
 
-            output.versionCode.set(100 * 165 + verCodeIncr)
+            output.versionCode.set(100 * 166 + verCodeIncr)
           }
         }
       }
