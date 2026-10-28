@@ -80,7 +80,7 @@ public class TermuxShellEnvironment extends AndroidShellEnvironment {
         if (!isFailSafe) {
             environment.put(ENV_TMPDIR, TermuxConstants.TERMUX_TMP_PREFIX_DIR_PATH);
             environment.put(ENV_PATH, TermuxConstants.TERMUX_BIN_PREFIX_DIR_PATH + String.format(":%s/cmdline-tools/latest/bin", ANDROID_HOME.getAbsolutePath()));
-            environment.remove(ENV_LD_LIBRARY_PATH);
+            environment.put(ENV_LD_LIBRARY_PATH, TermuxConstants.TERMUX_PREFIX_DIR_PATH + "/lib");
         }
 
         return environment;
