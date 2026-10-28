@@ -476,7 +476,9 @@ if [ "$apt_update_ok" = "false" ]; then
         exit 1
       fi
     done
-    # Phase 2: extract all downloaded .deb files.
+    # Deb binaries carry the old com.itsaky.androidide RUNPATH, so make dpkg-deb and tar find libraries in the IDE prefix lib. LD_LIBRARY_PATH takes precedence over RUNPATH.
+export LD_LIBRARY_PATH="$PREFIX/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+# Phase 2: extract all downloaded .deb files.
     for deb_file in *.deb; do
     if ! install_deb_extract "$deb_file" "$deb_file"; then
     print_err "Aborting curl+extract bypass."
