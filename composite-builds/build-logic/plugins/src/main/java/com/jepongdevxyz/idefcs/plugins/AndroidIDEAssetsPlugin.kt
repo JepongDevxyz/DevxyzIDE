@@ -47,6 +47,12 @@ class AndroidIDEAssetsPlugin : Plugin<Project> {
 
   override fun apply(target: Project) {
     target.run {
+      // :tooling:plugin is not a dependency of the app, so without this it
+      // is evaluated after the app project. Its jar and pom tasks must
+      // already exist when the app variants are configured, otherwise
+      // looking them up fails with "Task with name 'jar' not found".
+      evaluationDependsOn(":tooling:plugin")
+
       val wrapperGeneratorTaskProvider = tasks.register("generateGradleWrapper",
         GradleWrapperGeneratorTask::class.java)
 
@@ -104,9 +110,8 @@ class AndroidIDEAssetsPlugin : Plugin<Project> {
         // Local Gradle plugin JAR/POM copiers. The plugin jar and its generated
         // pom are bundled as assets so the IDE can resolve the build plugin
         // from the device instead of a remote repository.
-        // Use lazy task providers: :tooling:plugin may not be evaluated yet
-        // when the app variants are configured, so looking the tasks up
-        // eagerly with getByName fails with "Task with name 'jar' not found".
+        // Use lazy task providers for the plugin tasks, which exist by now
+        // because :tooling:plugin is evaluated before the app (see above).
         val localPluginProject = checkNotNull(rootProject.findProject(":tooling:plugin")) {
           "Cannot find the Tooling Plugin module with project path: ':tooling:plugin'"
         }
