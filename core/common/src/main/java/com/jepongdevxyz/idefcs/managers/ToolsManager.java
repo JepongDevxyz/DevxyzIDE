@@ -237,7 +237,7 @@ public class ToolsManager {
     }
   }
 
-  /** Extracts the bundled plugin and its plugin-config and build-info dependencies, parsing the group, artifact and version from the init script classpath line. */ private static void extractLocalPluginRepo() { final Matcher matcher = Pattern.compile("classpath\('([^:]+):([^:]+):([^']+)'\)").matcher(readInitScript()); if (!matcher.find()) { LOG.error("Could not find the Gradle plugin classpath in the init script"); return; } extractLocalPluginModule(matcher.group(1), matcher.group(2), matcher.group(3)); extractLocalPluginModule("com.jepongdevxyz.idefcs.tooling", "plugin-config", matcher.group(3)); extractLocalPluginModule("com.jepongdevxyz.idefcs.utilities", "build-info", matcher.group(3)); } private static File getLocalPluginRepoDir() {
+  /** Extracts the bundled plugin and its plugin-config and build-info dependencies, parsing the group, artifact and version from the init script classpath line. */ private static void extractLocalPluginRepo() { final Matcher matcher = Pattern.compile("classpath[(]'([^:]+):([^:]+):([^']+)'[)]").matcher(readInitScript()); if (!matcher.find()) { LOG.error("Could not find the Gradle plugin classpath in the init script"); return; } extractLocalPluginModule(matcher.group(1), matcher.group(2), matcher.group(3)); extractLocalPluginModule("com.jepongdevxyz.idefcs.tooling", "plugin-config", matcher.group(3)); extractLocalPluginModule("com.jepongdevxyz.idefcs.utilities", "build-info", matcher.group(3)); } private static File getLocalPluginRepoDir() {
     return new File(Environment.ANDROIDIDE_HOME, "local-plugin-repo");
   }
 
