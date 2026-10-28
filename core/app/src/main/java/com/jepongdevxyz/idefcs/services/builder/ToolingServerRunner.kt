@@ -92,8 +92,8 @@ internal class ToolingServerRunner(
         // InaccessibleObjectException.
         "--add-opens", "java.base/java.lang=ALL-UNNAMED", "--add-opens",
         "java.base/java.util=ALL-UNNAMED", "--add-opens",
-        "-Djava.io.tmpdir=" + Environment.TMP_DIR.absolutePath,
         "java.base/java.io=ALL-UNNAMED", // The JAR file to run
+        "-Djava.io.tmpdir=" + Environment.TMP_DIR.absolutePath,
         "-D${CoreConstants.STATUS_LISTENER_CLASS_KEY}=com.jepongdevxyz.idefcs.tooling.impl.util.LogbackStatusListener",
         "-jar", Environment.TOOLING_API_JAR.absolutePath
       )
