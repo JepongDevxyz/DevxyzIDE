@@ -36,6 +36,9 @@ abstract class GenerateInitScriptTask : DefaultTask() {
   @get:Input
   abstract val mavenGroupId: Property<String>
 
+  @get:Input
+  abstract val mavenArtifactId: Property<String>
+
   @get:OutputDirectory
   abstract val outputDir: DirectoryProperty
 
@@ -74,7 +77,7 @@ abstract class GenerateInitScriptTask : DefaultTask() {
           }
 
           dependencies {
-              classpath('${mavenGroupId.get()}:gradle-plugin:${downloadVersion.get()}') {
+              classpath('${mavenGroupId.get()}:${mavenArtifactId.get()}:${downloadVersion.get()}') {
                   setChanging(false)
               }
           }
