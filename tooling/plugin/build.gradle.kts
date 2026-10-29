@@ -1,18 +1,18 @@
 /*
- *  This file is part of AndroidIDE.
+ *  This file is part of DevxyzIDE.
  *
- *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  DevxyzIDE is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  AndroidIDE is distributed in the hope that it will be useful,
+ *  DevxyzIDE is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ *   along with DevxyzIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 
@@ -28,7 +28,7 @@ plugins {
 
 
 
-description = "Gradle Plugin for projects that are built with AndroidIDE"
+description = "Gradle Plugin for projects that are built with DevxyzIDE"
 
 tasks.named<Test>("test") {
   useJUnitPlatform()
@@ -70,25 +70,25 @@ gradlePlugin {
   plugins {
     create("initScriptPlugin") {
       id = "${BuildConfig.packageName}.init"
-      implementationClass = "${BuildConfig.packageName}.gradle.AndroidIDEInitScriptPlugin"
-      displayName = "AndroidIDE Init Script Gradle Plugin"
-      description = "Init script Gradle plugin for projects that are built with AndroidIDE"
+      implementationClass = "${BuildConfig.packageName}.gradle.DevxyzIDEInitScriptPlugin"
+      displayName = "DevxyzIDE Init Script Gradle Plugin"
+      description = "Init script Gradle plugin for projects that are built with DevxyzIDE"
       tags.set(setOf("androidide", "init"))
     }
 
     create("gradlePlugin") {
       id = BuildConfig.packageName
-      implementationClass = "${BuildConfig.packageName}.gradle.AndroidIDEGradlePlugin"
-      displayName = "AndroidIDE Gradle Plugin"
-      description = "Gradle plugin for projects that are built with AndroidIDE"
+      implementationClass = "${BuildConfig.packageName}.gradle.DevxyzIDEGradlePlugin"
+      displayName = "DevxyzIDE Gradle Plugin"
+      description = "Gradle plugin for projects that are built with DevxyzIDE"
       tags.set(setOf("androidide", "gradle"))
     }
 
     create("logsenderPlugin") {
       id = "${BuildConfig.packageName}.logsender"
       implementationClass = "${BuildConfig.packageName}.gradle.LogSenderPlugin"
-      displayName = "AndroidIDE LogSender Gradle Plugin"
-      description = "Gradle plugin for applying LogSender-specific configuration to projects that are built with AndroidIDE"
+      displayName = "DevxyzIDE LogSender Gradle Plugin"
+      description = "Gradle plugin for applying LogSender-specific configuration to projects that are built with DevxyzIDE"
       tags.set(setOf("androidide", "logsender"))
     }
   }

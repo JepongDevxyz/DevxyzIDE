@@ -38,7 +38,7 @@ composite-jaxp = { module = "com.jepongdevxyz.idefcs.build:jaxp" }
 composite-jdt = { module = "com.jepongdevxyz.idefcs.build:jdt" }
 composite-layoutlibApi = { module = "com.jepongdevxyz.idefcs.build:layoutlib-api" }
 
-# AndroidIDE
+# DevxyzIDE
 androidide-ts = { module = "com.itsaky.androidide.treesitter:android-tree-sitter", version.ref = "tree-sitter" }
 androidide-ts-java = { module = "com.itsaky.androidide.treesitter:tree-sitter-java", version.ref = "tree-sitter" }
 androidide-ts-json = { module = "com.itsaky.androidide.treesitter:tree-sitter-json", version.ref = "tree-sitter" }

@@ -1,18 +1,18 @@
 /*
- *  This file is part of AndroidIDE.
+ *  This file is part of DevxyzIDE.
  *
- *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  DevxyzIDE is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  AndroidIDE is distributed in the hope that it will be useful,
+ *  DevxyzIDE is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ *   along with DevxyzIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 package com.jepongdevxyz.idefcs.gradle
@@ -38,7 +38,7 @@ internal fun buildProject(
   vararg plugins: String
 ): BuildResult {
   val projectRoot = openProject(agpVersion, useApplyPluginGroovySyntax, *plugins)
-  val initScript = FileProvider.testHomeDir().resolve(".androidide/init/androidide.init.gradle")
+  val initScript = FileProvider.testHomeDir().resolve(".devxyzide/init/androidide.init.gradle")
   val mavenLocal = Paths.get("build/maven-local/repos.txt").toFile()
 
   if (!(mavenLocal.exists() && mavenLocal.isFile)) {
@@ -98,7 +98,7 @@ internal fun writeInitScript(file: File, deps: List<File>) {
         }
       }
       
-      apply plugin: com.jepongdevxyz.idefcs.gradle.AndroidIDEInitScriptPlugin
+      apply plugin: com.jepongdevxyz.idefcs.gradle.DevxyzIDEInitScriptPlugin
     """.trimIndent()
     )
   }

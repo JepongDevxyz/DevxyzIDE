@@ -1,18 +1,18 @@
 /*
- *  This file is part of AndroidIDE.
+ *  This file is part of DevxyzIDE.
  *
- *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  DevxyzIDE is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  AndroidIDE is distributed in the hope that it will be useful,
+ *  DevxyzIDE is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ *   along with DevxyzIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 package com.jepongdevxyz.idefcs.uidesigner
@@ -26,7 +26,7 @@ import com.jepongdevxyz.idefcs.editor.language.treesitter.XMLLanguage
 import com.jepongdevxyz.idefcs.editor.schemes.IDEColorSchemeProvider
 import com.jepongdevxyz.idefcs.editor.ui.IDEEditor
 import com.jepongdevxyz.idefcs.preferences.internal.EditorPreferences
-import com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeAndroidIDE
+import com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeDevxyzIDE
 import com.jepongdevxyz.idefcs.uidesigner.databinding.ActivityShowXmlBinding
 import com.jepongdevxyz.idefcs.utils.flashInfo
 import com.jepongdevxyz.idefcs.utils.jetbrainsMono
@@ -62,7 +62,7 @@ class ShowXmlActivity : BaseIDEActivity() {
     this.binding!!.toolbar.setNavigationOnClickListener { finish() }
 
     this.editor?.let { editor ->
-      editor.colorScheme = SchemeAndroidIDE.newInstance(this@ShowXmlActivity)
+      editor.colorScheme = SchemeDevxyzIDE.newInstance(this@ShowXmlActivity)
       editor.editable = false
       editor.typefaceText = jetbrainsMono()
       editor.typefaceLineNumber = jetbrainsMono()

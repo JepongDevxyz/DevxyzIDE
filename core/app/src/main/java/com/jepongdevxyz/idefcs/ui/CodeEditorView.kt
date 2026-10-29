@@ -1,18 +1,18 @@
 /*
- *  This file is part of AndroidIDE.
+ *  This file is part of DevxyzIDE.
  *
- *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  DevxyzIDE is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  AndroidIDE is distributed in the hope that it will be useful,
+ *  DevxyzIDE is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ *   along with DevxyzIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 package com.jepongdevxyz.idefcs.ui
@@ -42,7 +42,7 @@ import com.jepongdevxyz.idefcs.lsp.java.JavaLanguageServer
 import com.jepongdevxyz.idefcs.lsp.xml.XMLLanguageServer
 import com.jepongdevxyz.idefcs.models.Range
 import com.jepongdevxyz.idefcs.preferences.internal.EditorPreferences
-import com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeAndroidIDE
+import com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeDevxyzIDE
 import com.jepongdevxyz.idefcs.tasks.cancelIfActive
 import com.jepongdevxyz.idefcs.tasks.runOnUiThread
 import com.jepongdevxyz.idefcs.utils.customOrJBMono
@@ -130,7 +130,7 @@ class CodeEditorView(
       isHighlightCurrentBlock = true
       props.autoCompletionOnComposing = true
       dividerWidth = SizeUtils.dp2px(2f).toFloat()
-      colorScheme = SchemeAndroidIDE.newInstance(context)
+      colorScheme = SchemeDevxyzIDE.newInstance(context)
       lineSeparator = LineSeparator.LF
     }
 

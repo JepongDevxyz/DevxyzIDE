@@ -1,18 +1,18 @@
 /*
- *  This file is part of AndroidIDE.
+ *  This file is part of DevxyzIDE.
  *
- *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  DevxyzIDE is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  AndroidIDE is distributed in the hope that it will be useful,
+ *  DevxyzIDE is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ *   along with DevxyzIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 package com.jepongdevxyz.idefcs.editor.language.groovy
@@ -21,7 +21,7 @@ import com.jepongdevxyz.idefcs.editor.language.incremental.BaseIncrementalAnalyz
 import com.jepongdevxyz.idefcs.editor.language.incremental.IncrementalToken
 import com.jepongdevxyz.idefcs.editor.language.incremental.LineState
 import com.jepongdevxyz.idefcs.lexers.groovy.GroovyLexer
-import com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeAndroidIDE
+import com.jepongdevxyz.idefcs.syntax.colorschemes.SchemeDevxyzIDE
 import io.github.rosemoe.sora.lang.analysis.IncrementalAnalyzeManager.LineTokenizeResult
 import io.github.rosemoe.sora.lang.styling.Span
 import io.github.rosemoe.sora.lang.styling.SpanFactory
@@ -44,7 +44,7 @@ class GroovyAnalyzer : BaseIncrementalAnalyzeManager(GroovyLexer::class.java) {
       when (type) {
         GroovyLexer.WS -> {
           if (first) {
-            spans.add(SpanFactory.obtain(offset, TextStyle.makeStyle(SchemeAndroidIDE.TEXT_NORMAL)))
+            spans.add(SpanFactory.obtain(offset, TextStyle.makeStyle(SchemeDevxyzIDE.TEXT_NORMAL)))
             first = false
           }
         }
@@ -89,7 +89,7 @@ class GroovyAnalyzer : BaseIncrementalAnalyzeManager(GroovyLexer::class.java) {
         GroovyLexer.TRY,
         GroovyLexer.VOID,
         GroovyLexer.VOLATILE,
-        GroovyLexer.WHILE -> spans.add(SpanFactory.obtain(offset, SchemeAndroidIDE.forKeyword()))
+        GroovyLexer.WHILE -> spans.add(SpanFactory.obtain(offset, SchemeDevxyzIDE.forKeyword()))
 
         GroovyLexer.DECIMAL_LITERAL,
         GroovyLexer.HEX_LITERAL,
@@ -101,11 +101,11 @@ class GroovyAnalyzer : BaseIncrementalAnalyzeManager(GroovyLexer::class.java) {
         GroovyLexer.CHAR_LITERAL,
         GroovyLexer.NULL_LITERAL,
         ->
-          spans.add(SpanFactory.obtain(offset, TextStyle.makeStyle(SchemeAndroidIDE.LITERAL)))
+          spans.add(SpanFactory.obtain(offset, TextStyle.makeStyle(SchemeDevxyzIDE.LITERAL)))
 
         GroovyLexer.SINGLE_QUOTE_STRING,
         GroovyLexer.STRING_LITERAL -> spans.add(
-          SpanFactory.obtain(offset, SchemeAndroidIDE.forString()))
+          SpanFactory.obtain(offset, SchemeDevxyzIDE.forString()))
 
         GroovyLexer.LPAREN,
         GroovyLexer.RPAREN,
@@ -154,7 +154,7 @@ class GroovyAnalyzer : BaseIncrementalAnalyzeManager(GroovyLexer::class.java) {
         GroovyLexer.RBRACE,
         GroovyLexer.DOT,
         ->
-          spans.add(SpanFactory.obtain(offset, TextStyle.makeStyle(SchemeAndroidIDE.OPERATOR)))
+          spans.add(SpanFactory.obtain(offset, TextStyle.makeStyle(SchemeDevxyzIDE.OPERATOR)))
 
         GroovyLexer.BOOLEAN,
         GroovyLexer.BYTE,
@@ -166,23 +166,23 @@ class GroovyAnalyzer : BaseIncrementalAnalyzeManager(GroovyLexer::class.java) {
         GroovyLexer.LONG,
         GroovyLexer.SHORT,
         ->
-          spans.add(SpanFactory.obtain(offset, TextStyle.makeStyle(SchemeAndroidIDE.TYPE_NAME)))
+          spans.add(SpanFactory.obtain(offset, TextStyle.makeStyle(SchemeDevxyzIDE.TYPE_NAME)))
 
-        GroovyLexer.COMMENT -> spans.add(SpanFactory.obtain(offset, SchemeAndroidIDE.forComment()))
+        GroovyLexer.COMMENT -> spans.add(SpanFactory.obtain(offset, SchemeDevxyzIDE.forComment()))
         GroovyLexer.LINE_COMMENT -> handleLineCommentSpan(token, spans, offset)
         GroovyLexer.AT ->
-          spans.add(SpanFactory.obtain(offset, TextStyle.makeStyle(SchemeAndroidIDE.ANNOTATION)))
+          spans.add(SpanFactory.obtain(offset, TextStyle.makeStyle(SchemeDevxyzIDE.ANNOTATION)))
 
         GroovyLexer.IDENTIFIER -> {
-          var colorId = SchemeAndroidIDE.TEXT_NORMAL
+          var colorId = SchemeDevxyzIDE.TEXT_NORMAL
           if (previous == GroovyLexer.AT) {
-            colorId = SchemeAndroidIDE.ANNOTATION
+            colorId = SchemeDevxyzIDE.ANNOTATION
           }
           spans.add(SpanFactory.obtain(offset, TextStyle.makeStyle(colorId)))
         }
 
         else -> spans.add(
-          SpanFactory.obtain(offset, TextStyle.makeStyle(SchemeAndroidIDE.TEXT_NORMAL)))
+          SpanFactory.obtain(offset, TextStyle.makeStyle(SchemeDevxyzIDE.TEXT_NORMAL)))
       }
       previous = type
     }

@@ -1,18 +1,18 @@
 /*
- *  This file is part of AndroidIDE.
+ *  This file is part of DevxyzIDE.
  *
- *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  DevxyzIDE is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  AndroidIDE is distributed in the hope that it will be useful,
+ *  DevxyzIDE is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ *   along with DevxyzIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 package com.jepongdevxyz.idefcs.logsender;
@@ -34,7 +34,7 @@ import android.widget.Toast;
 import com.jepongdevxyz.idefcs.logsender.utils.Logger;
 
 /**
- * A {@link Service} which runs in the background and sends logs to AndroidIDE.
+ * A {@link Service} which runs in the background and sends logs to DevxyzIDE.
  *
  * @author Akash Yadav
  */
@@ -44,7 +44,7 @@ public class LogSenderService extends Service {
   private static final int NOTIFICATION_ID = 644;
   private static final String NOTIFICATION_CHANNEL_NAME = "LogSender Service";
   private static final String NOTIFICATION_TITLE = "LogSender Service";
-  private static final String NOTIFICATION_TEXT = "Connected to AndroidIDE";
+  private static final String NOTIFICATION_TEXT = "Connected to DevxyzIDE";
   private static final String NOTIFICATION_CHANNEL_ID = "ide.logsender.service";
   public static final String ACTION_START_SERVICE = "ide.logsender.service.start";
   public static final String ACTION_STOP_SERVICE = "ide.logsender.service.stop";
@@ -88,7 +88,7 @@ public class LogSenderService extends Service {
     boolean result = false;
     try {
       result = logSender.bind(getApplicationContext());
-      Logger.debug("Bind to AndroidIDE:", result);
+      Logger.debug("Bind to DevxyzIDE:", result);
     } catch (Exception err) {
       Logger.error(getString(R.string.msg_bind_service_failed), err);
     }
@@ -109,7 +109,7 @@ public class LogSenderService extends Service {
     Logger.debug("[LogSenderService] [onTaskRemoved]", rootIntent);
 
     if (!logSender.isConnected() && !logSender.isBinding()) {
-      Logger.debug("Not bound to AndroidIDE. Ignored.");
+      Logger.debug("Not bound to DevxyzIDE. Ignored.");
       return;
     }
 
@@ -122,7 +122,7 @@ public class LogSenderService extends Service {
   public void onDestroy() {
     Logger.debug("[LogSenderService] [onDestroy]");
     if (!logSender.isConnected() && !logSender.isBinding()) {
-      Logger.debug("Not bound to AndroidIDE. Ignored.");
+      Logger.debug("Not bound to DevxyzIDE. Ignored.");
       return;
     }
 
@@ -171,7 +171,7 @@ public class LogSenderService extends Service {
       builder.setShowWhen(false);
     }
 
-    builder.setSmallIcon(R.drawable.ic_androidide_log);
+    builder.setSmallIcon(R.drawable.ic_devxyzide_log);
 
     if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
       builder.setColor(0xFF607D8B);

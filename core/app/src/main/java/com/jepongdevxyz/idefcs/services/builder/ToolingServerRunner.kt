@@ -73,6 +73,7 @@ internal class ToolingServerRunner(
     var process: Process?
     try {
       log.info("Starting tooling API server...")
+      Environment.mkdirIfNotExits(Environment.TMP_DIR)
       val command = listOf(
         Environment.JAVA.absolutePath, // The 'java' binary executable
         // Allow reflective access to private members of classes in the following
@@ -92,6 +93,7 @@ internal class ToolingServerRunner(
         "--add-opens", "java.base/java.lang=ALL-UNNAMED", "--add-opens",
         "java.base/java.util=ALL-UNNAMED", "--add-opens",
         "java.base/java.io=ALL-UNNAMED", // The JAR file to run
+        "-Djava.io.tmpdir=" + Environment.TMP_DIR.absolutePath,
         "-D${CoreConstants.STATUS_LISTENER_CLASS_KEY}=com.jepongdevxyz.idefcs.tooling.impl.util.LogbackStatusListener",
         "-jar", Environment.TOOLING_API_JAR.absolutePath
       )
@@ -103,7 +105,7 @@ internal class ToolingServerRunner(
         // error stream is used to read the server logs
         this.redirectErrorStream = false
         this.workingDirectory = null // HOME
-        this.environment = envs
+        this.environment = envs + ("TMPDIR" to Environment.TMP_DIR.absolutePath) + ("LD_LIBRARY_PATH" to Environment.PREFIX.absolutePath + "/lib") + ("CURL_CA_BUNDLE" to Environment.PREFIX.absolutePath + "/etc/tls/cert.pem") + ("SSL_CERT_FILE" to Environment.PREFIX.absolutePath + "/etc/tls/cert.pem")
       }
 
       pid = ReflectionUtils.getDeclaredField(process::class.java, "pid")?.get(process) as Int?

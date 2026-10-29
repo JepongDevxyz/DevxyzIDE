@@ -1,18 +1,18 @@
 /*
- *  This file is part of AndroidIDE.
+ *  This file is part of DevxyzIDE.
  *  
- *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  DevxyzIDE is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *  
- *  AndroidIDE is distributed in the hope that it will be useful,
+ *  DevxyzIDE is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *  
  *  You should have received a copy of the GNU General Public License
- *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ *   along with DevxyzIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 package com.jepongdevxyz.idefcs.preferences
@@ -21,7 +21,7 @@ import android.content.Context
 import androidx.preference.Preference
 import com.jepongdevxyz.idefcs.preferences.internal.StatPreferences
 import com.jepongdevxyz.idefcs.resources.R
-import com.jepongdevxyz.idefcs.stats.AndroidIDEStats
+import com.jepongdevxyz.idefcs.stats.DevxyzIDEStats
 import com.jepongdevxyz.idefcs.stats.StatUploadWorker
 import kotlinx.parcelize.Parcelize
 
@@ -83,34 +83,34 @@ private abstract class StatDataPreference(
 private class UniqueID(
   override val key: String = StatUploadWorker.KEY_DEVICE_ID,
   override val title: Int = R.string.title_unique_id,
-) : StatDataPreference({ AndroidIDEStats.uniqueDeviceId })
+) : StatDataPreference({ DevxyzIDEStats.uniqueDeviceId })
 
 @Parcelize
 private class DeviceName(
   override val key: String = StatUploadWorker.KEY_DEVICE_NAME,
   override val title: Int = R.string.title_device
-) : StatDataPreference({ AndroidIDEStats.deviceModel })
+) : StatDataPreference({ DevxyzIDEStats.deviceModel })
 
 @Parcelize
 private class AndroidVersion(
   override val key: String = StatUploadWorker.KEY_ANDROID_VERSION,
   override val title: Int = R.string.title_android_version
-) : StatDataPreference({ AndroidIDEStats.androidVersion.toString() })
+) : StatDataPreference({ DevxyzIDEStats.androidVersion.toString() })
 
 @Parcelize
 private class AppVersion(
   override val key: String = StatUploadWorker.KEY_APP_VERSION,
   override val title: Int = R.string.title_app_version
-) : StatDataPreference({ AndroidIDEStats.appVersion })
+) : StatDataPreference({ DevxyzIDEStats.appVersion })
 
 @Parcelize
 private class Country(
   override val key: String = StatUploadWorker.KEY_DEVICE_COUNTRY,
   override val title: Int = R.string.title_country
-) : StatDataPreference({ AndroidIDEStats.country })
+) : StatDataPreference({ DevxyzIDEStats.country })
 
 @Parcelize
 private class CpuArch(
   override val key: String = StatUploadWorker.KEY_APP_CPU_ARCH,
   override val title: Int = R.string.title_cpu_arch
-) : StatDataPreference({ AndroidIDEStats.cpuArch })
+) : StatDataPreference({ DevxyzIDEStats.cpuArch })

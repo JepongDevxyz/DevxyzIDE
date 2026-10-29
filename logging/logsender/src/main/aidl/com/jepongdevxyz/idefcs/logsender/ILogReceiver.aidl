@@ -13,12 +13,12 @@ oneway interface ILogReceiver {
   void ping();
 
   /**
-   * Called by the client applications to connect to log receiver in AndroidIDE.
+   * Called by the client applications to connect to log receiver in DevxyzIDE.
    */
   void connect(ILogSender sender);
 
   /**
-   * Called by the client applications to disconnect from the log receiver in AndroidIDE.
+   * Called by the client applications to disconnect from the log receiver in DevxyzIDE.
    */
   void disconnect(String packageName, String senderId);
 }

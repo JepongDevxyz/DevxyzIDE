@@ -1,18 +1,18 @@
 /*
- *  This file is part of AndroidIDE.
+ *  This file is part of DevxyzIDE.
  *
- *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  DevxyzIDE is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  AndroidIDE is distributed in the hope that it will be useful,
+ *  DevxyzIDE is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ *   along with DevxyzIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 package com.jepongdevxyz.idefcs.services.builder
 
@@ -46,6 +46,8 @@ import com.jepongdevxyz.idefcs.tooling.api.IProject
 import com.jepongdevxyz.idefcs.tooling.api.IToolingApiClient
 import com.jepongdevxyz.idefcs.tooling.api.IToolingApiServer
 import com.jepongdevxyz.idefcs.tooling.api.LogSenderConfig.PROPERTY_LOGSENDER_ENABLED
+import com.jepongdevxyz.idefcs.tooling.api.LogSenderConfig._PROPERTY_IS_TEST_ENV
+import com.jepongdevxyz.idefcs.tooling.api.LogSenderConfig._PROPERTY_MAVEN_LOCAL_REPOSITORY
 import com.jepongdevxyz.idefcs.tooling.api.messages.InitializeProjectParams
 import com.jepongdevxyz.idefcs.tooling.api.messages.LogMessageParams
 import com.jepongdevxyz.idefcs.tooling.api.messages.TaskExecutionMessage
@@ -310,6 +312,13 @@ class GradleBuildService : Service(), BuildService, IToolingApiClient,
     if (BuildPreferences.isOfflineEnabled) {
       extraArgs.add("--offline")
     }
+      val localPluginRepo = File(Environment.DEVXYZIDE_HOME, "local-plugin-repo")
+      if (localPluginRepo.isDirectory) {
+            extraArgs.add("-P" + _PROPERTY_IS_TEST_ENV + "=true")
+            extraArgs.add("-P" + _PROPERTY_MAVEN_LOCAL_REPOSITORY + "=" + localPluginRepo.absolutePath)
+      } else {
+            log.error("Local plugin repository is missing: {}", localPluginRepo.absolutePath)
+      }
     return CompletableFuture.completedFuture(extraArgs)
   }
 

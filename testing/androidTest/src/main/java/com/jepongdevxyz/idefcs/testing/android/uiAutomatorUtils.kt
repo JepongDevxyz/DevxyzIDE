@@ -1,18 +1,18 @@
 /*
- *  This file is part of AndroidIDE.
+ *  This file is part of DevxyzIDE.
  *
- *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  DevxyzIDE is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  AndroidIDE is distributed in the hope that it will be useful,
+ *  DevxyzIDE is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ *   along with DevxyzIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 package com.jepongdevxyz.idefcs.testing.android
@@ -36,12 +36,12 @@ import com.jepongdevxyz.idefcs.utils.uncheckedCast
 const val LAUNCH_TIMEOUT = 5000L
 
 /**
- * Launches the AndroidIDE application using UI Automator.
+ * Launches the DevxyzIDE application using UI Automator.
  *
  * @param fromLauncher Whether the application must be launched from the Android launcher.
  * @param clearTasks Whether the application's previous tasks must be cleared.
  */
-fun launchAndroidIDE(
+fun launchDevxyzIDE(
   fromLauncher: Boolean = true,
   clearTasks: Boolean = true,
 ): UiDevice {

@@ -1,18 +1,18 @@
 /*
- *  This file is part of AndroidIDE.
+ *  This file is part of DevxyzIDE.
  *
- *  AndroidIDE is free software: you can redistribute it and/or modify
+ *  DevxyzIDE is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 3 of the License, or
  *  (at your option) any later version.
  *
- *  AndroidIDE is distributed in the hope that it will be useful,
+ *  DevxyzIDE is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *   along with AndroidIDE.  If not, see <https://www.gnu.org/licenses/>.
+ *   along with DevxyzIDE.  If not, see <https://www.gnu.org/licenses/>.
  */
 package com.jepongdevxyz.idefcs.tooling.impl.sync
 
@@ -71,7 +71,7 @@ abstract class AbstractModelBuilder<P, R>(
       if (agpVersion < MINIMUM_SUPPORTED) {
         throw ModelBuilderException(
           agpVersion.toString()
-              + " is not supported by AndroidIDE. "
+              + " is not supported by DevxyzIDE. "
               + "Please update your project to use at least "
               + MINIMUM_SUPPORTED
               + " to build this project.")
@@ -81,7 +81,7 @@ abstract class AbstractModelBuilder<P, R>(
       if (!newerAgpWarned.get() && agpVersion > ToolingProps.latestTestedAgpVersion) {
         val syncIssue = DefaultSyncIssue(
           data = "${agpVersion.toStringSimple()}:${ToolingProps.latestTestedAgpVersion.toStringSimple()}",
-          message = "You are using Android Gradle Plugin version that has not been tested with AndroidIDE.",
+          message = "You are using Android Gradle Plugin version that has not been tested with DevxyzIDE.",
           multiLineMessage = null,
           severity = SyncIssue.SEVERITY_WARNING,
           type = IDESyncIssue.TYPE_AGP_VERSION_TOO_NEW

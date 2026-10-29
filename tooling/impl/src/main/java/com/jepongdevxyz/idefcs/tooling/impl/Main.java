@@ -113,6 +113,7 @@ public class Main {
     launcher.setStandardError(out);
     launcher.setStandardOutput(out);
     launcher.setStandardInput(new ByteArrayInputStream("NoOp".getBytes(StandardCharsets.UTF_8)));
+    launcher.setJvmArguments("-Djava.io.tmpdir=" + System.getProperty("java.io.tmpdir"));
     launcher.addProgressListener(new ForwardingProgressListener(), progressUpdateTypes());
 
     if (client != null) {
