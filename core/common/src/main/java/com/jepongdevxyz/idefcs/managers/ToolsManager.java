@@ -22,6 +22,7 @@ import androidx.annotation.NonNull;
 import com.blankj.utilcode.util.FileUtils;
 import com.blankj.utilcode.util.ResourceUtils;
 import com.jepongdevxyz.idefcs.app.BaseApplication;
+import com.jepongdevxyz.idefcs.buildinfo.BuildInfo;
 import com.jepongdevxyz.idefcs.app.configuration.IDEBuildConfigProvider;
 import com.jepongdevxyz.idefcs.app.configuration.IJdkDistributionProvider;
 import com.jepongdevxyz.idefcs.utils.Environment;
@@ -307,7 +308,69 @@ private static void extractColorScheme(final BaseApplication app) {
     }
   }
 
-  /** Extracts the bundled plugin and its plugin-config and build-info dependencies, parsing the group, artifact and version from the init script classpath line. */ private static void extractLocalPluginRepo() { final Matcher matcher = Pattern.compile("classpath[(]'([^:]+):([^:]+):([^']+)'[)]").matcher(readInitScript()); if (!matcher.find()) { LOG.error("Could not find the Gradle plugin classpath in the init script"); return; } extractLocalPluginModule(matcher.group(1), matcher.group(2), matcher.group(3)); extractLocalPluginModule("com.jepongdevxyz.idefcs.tooling", "plugin-config", matcher.group(3)); extractLocalPluginModule("com.jepongdevxyz.idefcs.utilities", "build-info", matcher.group(3)); } private static File getLocalPluginRepoDir() {
+  /**
+   * Extracts the bundled plugin and its plugin-config and build-info dependencies, parsing
+   * the group, artifact and version from the init script classpath line.
+   *
+   * The project buildscript classpath (added by DevxyzIDEInitScriptPlugin via ideDependency)
+   * requests the SIMPLE version (BuildInfo.VERSION_NAME_SIMPLE, e.g. 1.0.0-internal), NOT
+   * the bundled download version (e.g. 1.0.0-internal-&lt;hash&gt;-SNAPSHOT). Gradle therefore
+   * looked in the local repo for the simple version and found nothing (17402:
+   * "Could not find ...:plugin:1.0.0-internal"). So the bundled plugin is also published
+   * under the simple version, with only its own &lt;version&gt; rewritten; its dependency
+   * versions stay at the bundled version, which is what the repo already contains.
+   */
+  private static void extractLocalPluginRepo() {
+    final Matcher matcher = Pattern.compile("classpath[(]'([^:]+):([^:]+):([^']+)'[)]").matcher(readInitScript());
+    if (!matcher.find()) {
+      LOG.error("Could not find the Gradle plugin classpath in the init script");
+      return;
+    }
+    final var bundledVersion = matcher.group(3);
+    extractLocalPluginModule(matcher.group(1), matcher.group(2), bundledVersion);
+    extractLocalPluginModule("com.jepongdevxyz.idefcs.tooling", "plugin-config", bundledVersion);
+    extractLocalPluginModule("com.jepongdevxyz.idefcs.utilities", "build-info", bundledVersion);
+    final var simpleVersion = BuildInfo.VERSION_NAME_SIMPLE;
+    if (!simpleVersion.equals(bundledVersion)) {
+      extractLocalPluginModuleAsVersion(matcher.group(1), matcher.group(2), bundledVersion, simpleVersion);
+    }
+  }
+
+  /**
+   * Publishes one bundled module under a second version (the simple version) in the local
+   * repo. The jar bytes are identical; the pom is copied with only the module's own
+   * &lt;version&gt; (its first occurrence) rewritten, so dependency versions keep pointing
+   * at the bundled version already in the repo.
+   */
+  private static void extractLocalPluginModuleAsVersion(String group, String artifact, String bundledVersion, String targetVersion) {
+    final var versionDir = new File(getLocalPluginRepoDir(),
+        group.replace('.', '/') + "/" + artifact + "/" + targetVersion);
+    final var jarFile = new File(versionDir, artifact + "-" + targetVersion + ".jar");
+    final var pomFile = new File(versionDir, artifact + "-" + targetVersion + ".pom");
+    if (jarFile.exists() && pomFile.exists()) {
+      return;
+    }
+    if (!versionDir.exists() && !versionDir.mkdirs()) {
+      LOG.error("Failed to create local plugin repository directory: {}", versionDir);
+      return;
+    }
+    if (!jarFile.exists()) {
+      ResourceUtils.copyFileFromAssets(getCommonAsset("local-plugin/" + artifact + ".jar"),
+          jarFile.getAbsolutePath());
+    }
+    if (!pomFile.exists()) {
+      final var pom = ResourceUtils.readAssets2String(getCommonAsset("local-plugin/" + artifact + ".pom"));
+      final var ownVersionTag = "<version>" + bundledVersion + "</version>";
+      final var idx = pom.indexOf(ownVersionTag);
+      if (idx < 0) {
+        LOG.error("Bundled pom for {} has no own version tag {}", artifact, ownVersionTag);
+        return;
+      }
+      final var rewritten = pom.substring(0, idx) + "<version>" + targetVersion + "</version>"
+          + pom.substring(idx + ownVersionTag.length());
+      FilesKt.writeText(pomFile, rewritten, StandardCharsets.UTF_8);
+    }
+  } private static File getLocalPluginRepoDir() {
     return new File(Environment.DEVXYZIDE_HOME, "local-plugin-repo");
   }
 
