@@ -54,6 +54,7 @@ class DevxyzIDEAssetsPlugin : Plugin<Project> {
       evaluationDependsOn(":tooling:plugin")
       evaluationDependsOn(":tooling:plugin-config")
       evaluationDependsOn(":utilities:build-info")
+      evaluationDependsOn(":logging:logsender")
 
       val wrapperGeneratorTaskProvider = tasks.register("generateGradleWrapper",
         GradleWrapperGeneratorTask::class.java)
@@ -91,6 +92,9 @@ class DevxyzIDEAssetsPlugin : Plugin<Project> {
         }
         val buildInfoProject = checkNotNull(rootProject.findProject(":utilities:build-info")) {
           "Cannot find the Build Info module with project path: ':utilities:build-info'"
+        }
+        val logsenderProject = checkNotNull(rootProject.findProject(":logging:logsender")) {
+          "Cannot find the LogSender module with project path: ':logging:logsender'"
         }
 
         // Init script generator. The classpath uses the :tooling:plugin
@@ -229,6 +233,43 @@ class DevxyzIDEAssetsPlugin : Plugin<Project> {
         variant.sources.assets?.addGeneratedSourceDirectory(copyBuildInfoPom,
           AddFileToAssetsTask::outputDirectory)
 
+        // LogSender AAR/POM copiers. LogSenderPlugin adds
+        // com.jepongdevxyz.idefcs.logging:logsender at the SIMPLE version
+        // (1.0.0-internal on the phone) to every debuggable variant's
+        // runtime classpath, so assembleDebug fails with
+        // "Could not find ...:logsender:1.0.0-internal" unless the AAR
+        // is in the local repo too. LogSender is an Android library
+        // (manifest, resources, service), so its artifact is an AAR,
+        // not a JAR. The AAR is the standard AGP bundleReleaseAar
+        // output. The pom is written by a task below (not copied from
+        // a vanniktech publication task, whose task name varies by
+        // publication type); LogSender has no runtime dependencies,
+        // so a pom with coordinates + packaging aar is sufficient
+        // for Gradle's Maven resolution, and ToolsManager rewrites
+        // its own <version> to the SIMPLE version on extraction.
+        val copyLogsenderAar = tasks.register("copy${variantNameCapitalized}LogsenderAar",
+          AddFileToAssetsTask::class.java) {
+          dependsOn(logsenderProject.tasks.named("bundleReleaseAar"))
+          inputFile.set(logsenderProject.layout.buildDirectory.file(
+            "outputs/aar/logsender-release.aar"))
+          fileName.set("logsender.aar")
+          baseAssetsPath.set("data/common/local-plugin")
+        }
+
+        variant.sources.assets?.addGeneratedSourceDirectory(copyLogsenderAar,
+          AddFileToAssetsTask::outputDirectory)
+
+        val writeLogsenderPom = tasks.register(
+          "write${variantNameCapitalized}LogsenderPom",
+          WriteLogsenderPomTask::class.java) {
+          mavenGroupId.set(logsenderProject.group.toString())
+          mavenArtifactId.set(logsenderProject.name)
+          version.set(this@run.downloadVersion)
+        }
+
+        variant.sources.assets?.addGeneratedSourceDirectory(writeLogsenderPom,
+          WriteLogsenderPomTask::outputDirectory)
+
         // Local plugin version file. The version is the same downloadVersion
         // used for the init script classpath, not a hardcoded value.
         val writeLocalPluginVersion = tasks.register(
@@ -262,5 +303,47 @@ abstract class LocalPluginVersionTask : DefaultTask() {
     val outFile = outputDirectory.file("data/common/local-plugin-version.txt").get().asFile
       .also { it.parentFile.mkdirs() }
     outFile.writeText(version.get())
+  }
+}
+
+/**
+ * Writes the LogSender pom to assets as data/common/local-plugin/logsender.pom.
+ * Coordinates come from the :logging:logsender project itself (group and
+ * name), version is the same downloadVersion used for the plugin bundle.
+ * LogSender has no runtime dependencies, so the pom carries none.
+ * ToolsManager rewrites the first (own) <version> to the SIMPLE version
+ * when extracting the SIMPLE-version entry, exactly as it does for
+ * the plugin pom.
+ */
+abstract class WriteLogsenderPomTask : DefaultTask() {
+
+  @get:Input
+  abstract val mavenGroupId: Property<String>
+
+  @get:Input
+  abstract val mavenArtifactId: Property<String>
+
+  @get:Input
+  abstract val version: Property<String>
+
+  @get:OutputDirectory
+  abstract val outputDirectory: DirectoryProperty
+
+  @TaskAction
+  fun write() {
+    val outFile = outputDirectory.file("data/common/local-plugin/logsender.pom").get().asFile
+      .also { it.parentFile.mkdirs() }
+    outFile.writeText(
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+        "<project xmlns=\"http://maven.apache.org/POM/4.0.0\">\n" +
+        "  <modelVersion>4.0.0</modelVersion>\n" +
+        "  <groupId>" + mavenGroupId.get() + "</groupId>\n" +
+        "  <artifactId>" + mavenArtifactId.get() + "</artifactId>\n" +
+        "  <version>" + version.get() + "</version>\n" +
+        "  <packaging>aar</packaging>\n" +
+        "  <name>logsender</name>\n" +
+        "  <description>LogSender is used to read logs from applications built with DevxyzIDE</description>\n" +
+        "</project>\n"
+    )
   }
 }

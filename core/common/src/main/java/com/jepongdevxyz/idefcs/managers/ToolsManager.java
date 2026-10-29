@@ -334,6 +334,85 @@ private static void extractColorScheme(final BaseApplication app) {
     if (!simpleVersion.equals(bundledVersion)) {
       extractLocalPluginModuleAsVersion(matcher.group(1), matcher.group(2), bundledVersion, simpleVersion);
     }
+    // LogSender: LogSenderPlugin adds
+    // <MVN_GROUP_ID>.logging:logsender at the SIMPLE version to every
+    // debuggable variant's runtime classpath, so assembleDebug failed
+    // with "Could not find ...:logsender:1.0.0-internal" until logsender
+    // was bundled too. It is an Android library, so its artifact is an
+    // AAR (logsender.aar asset), not a JAR. Extract it at both the
+    // bundled version (pom as-is) and the SIMPLE version (pom's own
+    // version rewritten), mirroring the plugin handling above. The
+    // SIMPLE-version dir does not exist on phones updated from 17502,
+    // so it extracts on next app start with no Clear Data needed.
+    final var logsenderGroup = BuildInfo.MVN_GROUP_ID + ".logging";
+    extractLocalPluginModuleAar(logsenderGroup, "logsender", bundledVersion);
+    if (!simpleVersion.equals(bundledVersion)) {
+      extractLocalPluginModuleAarAsVersion(logsenderGroup, "logsender", bundledVersion, simpleVersion);
+    }
+  }
+
+  /**
+   * Extracts one bundled AAR module (currently only logsender) into a
+   * local Maven repository layout, skipping only when both the AAR
+   * and pom already exist at exactly that version path.
+   */
+  private static void extractLocalPluginModuleAar(String group, String artifact, String version) {
+    final var versionDir = new File(getLocalPluginRepoDir(),
+        group.replace('.', '/') + "/" + artifact + "/" + version);
+    final var aarFile = new File(versionDir, artifact + "-" + version + ".aar");
+    final var pomFile = new File(versionDir, artifact + "-" + version + ".pom");
+    if (aarFile.exists() && pomFile.exists()) {
+      return;
+    }
+    if (!versionDir.exists() && !versionDir.mkdirs()) {
+      LOG.error("Failed to create local plugin repository directory: {}", versionDir);
+      return;
+    }
+    if (!aarFile.exists()) {
+      ResourceUtils.copyFileFromAssets(getCommonAsset("local-plugin/" + artifact + ".aar"),
+          aarFile.getAbsolutePath());
+    }
+    if (!pomFile.exists()) {
+      ResourceUtils.copyFileFromAssets(getCommonAsset("local-plugin/" + artifact + ".pom"),
+          pomFile.getAbsolutePath());
+    }
+  }
+
+  /**
+   * Publishes one bundled AAR module under a second version (the simple
+   * version). The AAR bytes are identical; the pom is copied with only
+   * the module's own <version> (its first occurrence) rewritten, so
+   * dependency versions (none for logsender) keep pointing at the
+   * bundled version already in the repo.
+   */
+  private static void extractLocalPluginModuleAarAsVersion(String group, String artifact, String bundledVersion, String targetVersion) {
+    final var versionDir = new File(getLocalPluginRepoDir(),
+        group.replace('.', '/') + "/" + artifact + "/" + targetVersion);
+    final var aarFile = new File(versionDir, artifact + "-" + targetVersion + ".aar");
+    final var pomFile = new File(versionDir, artifact + "-" + targetVersion + ".pom");
+    if (aarFile.exists() && pomFile.exists()) {
+      return;
+    }
+    if (!versionDir.exists() && !versionDir.mkdirs()) {
+      LOG.error("Failed to create local plugin repository directory: {}", versionDir);
+      return;
+    }
+    if (!aarFile.exists()) {
+      ResourceUtils.copyFileFromAssets(getCommonAsset("local-plugin/" + artifact + ".aar"),
+          aarFile.getAbsolutePath());
+    }
+    if (!pomFile.exists()) {
+      final var pom = ResourceUtils.readAssets2String(getCommonAsset("local-plugin/" + artifact + ".pom"));
+      final var ownVersionTag = "<version>" + bundledVersion + "</version>";
+      final var idx = pom.indexOf(ownVersionTag);
+      if (idx < 0) {
+        LOG.error("Bundled pom for {} has no own version tag {}", artifact, ownVersionTag);
+        return;
+      }
+      final var rewritten = pom.substring(0, idx) + "<version>" + targetVersion + "</version>"
+          + pom.substring(idx + ownVersionTag.length());
+      FilesKt.writeText(pomFile, rewritten, StandardCharsets.UTF_8);
+    }
   }
 
   /**
