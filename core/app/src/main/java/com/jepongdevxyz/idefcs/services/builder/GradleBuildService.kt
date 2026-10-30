@@ -259,6 +259,7 @@ class GradleBuildService : Service(), BuildService, IToolingApiClient,
   }
 
   override fun logOutput(line: String) {
+    SdkPlatformInstaller.onOutputLine(line)
     eventListener?.onOutput(line)
   }
 
@@ -270,11 +271,13 @@ class GradleBuildService : Service(), BuildService, IToolingApiClient,
   override fun onBuildSuccessful(result: BuildResult) {
     updateNotification(getString(R.string.build_status_sucess), false)
     eventListener?.onBuildSuccessful(result.tasks)
+    SdkPlatformInstaller.onBuildSucceeded()
   }
 
   override fun onBuildFailed(result: BuildResult) {
     updateNotification(getString(R.string.build_status_failed), false)
     eventListener?.onBuildFailed(result.tasks)
+    SdkPlatformInstaller.onBuildFailed(this, result.tasks)
   }
 
   override fun onProgressEvent(event: ProgressEvent) {
