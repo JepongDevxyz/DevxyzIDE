@@ -29,8 +29,9 @@ import java.util.concurrent.TimeUnit
  * only because an Android platform is missing from the IDE's SDK, this
  * installs that platform in-app with the command-line tools the setup
  * already installed, reports progress into the build output, and restarts
- * the same build once. Attempted once per platform until a build succeeds,
- * so a failed install can never loop forever.
+ * the same build once. A successful install is attempted only once per
+ * platform until a build succeeds, so the install/restart cycle can never
+ * loop forever; a failed install stays retryable on the next build.
  */
 object SdkPlatformInstaller {
 
@@ -92,26 +93,55 @@ object SdkPlatformInstaller {
         try {
           if (success) {
             service.logOutput(
-              "[DevxyzIDE] Naka-install na ang Android $api platform. " +
-                "Sisimulan ko ulit ang build."
+              "[DevxyzIDE] Naka-install na ang Android $api platform."
             )
             // The daemon from the failed build cached the SDK without the
             // new platform; stop it so the restarted build rescans the SDK.
-            try {
-              val projectPath = try {
-                com.jepongdevxyz.idefcs.projects.IProjectManager.getInstance()
-                  .projectDirPath
+            // stopGradleDaemons() blocks while it waits on the gradle
+            // process (up to a minute), and TaskExecutor delivers this
+            // callback on the UI thread — running it here froze the whole
+            // app (ANR). Stop the daemon on a background thread instead,
+            // then restart the build from that callback (executeTasks is
+            // non-blocking, so it is safe there).
+            TaskExecutor.executeAsync(
+              Callable {
+                try {
+                  val projectPath = try {
+                    com.jepongdevxyz.idefcs.projects.IProjectManager.getInstance()
+                      .projectDirPath
+                  } catch (e: Exception) {
+                    null
+                  }
+                  if (projectPath != null) {
+                    stopGradleDaemons(projectPath)
+                  }
+                } catch (e: Exception) {
+                  // Best-effort; the restart proceeds either way.
+                }
+                true
+              }
+            ) { _ ->
+              try {
+                service.logOutput(
+                  "[DevxyzIDE] Sisimulan ko ulit ang build."
+                )
+                service.executeTasks(*taskArray)
               } catch (e: Exception) {
-                null
+                service.logOutput(
+                  "[DevxyzIDE] Na-install na ang Android $api platform, pero " +
+                    "hindi ko na-restart ang build (${e.message}). " +
+                    "Pindutin ulit ang Run/Build."
+                )
               }
-              if (projectPath != null) {
-                stopGradleDaemons(projectPath)
-              }
-            } catch (e: Exception) {
-              // Best-effort; the restart proceeds either way.
             }
-            service.executeTasks(*taskArray)
           } else {
+            // The loop guard must only stick for an install that actually
+            // succeeded (its restarted build failing again for the same
+            // platform is the loop it guards against). A failed install —
+            // timeout, dropped download — must stay retryable, otherwise
+            // every later build silently skips the install and the user
+            // is stuck until some unrelated build succeeds.
+            installAttempted.remove(api)
             service.logOutput(
               "[DevxyzIDE] Hindi ko na-install ang Android $api platform ($detail). " +
                 "Manual na paraan sa Terminal: " + manualCommand(api)
@@ -277,16 +307,30 @@ object SdkPlatformInstaller {
   fun stopGradleDaemons(projectPath: String) {
     try {
       val projectDir = File(projectPath)
+      val candidates = mutableListOf<List<String>>()
       val gradlew = File(projectDir, "gradlew")
-      val command: List<String>? = when {
-        gradlew.isFile -> listOf("sh", gradlew.absolutePath, "--stop")
-        else -> findGradleDistribution()?.let {
-          listOf("sh", File(it, "bin/gradle").absolutePath, "--stop")
+      if (gradlew.isFile) {
+        candidates += listOf("sh", gradlew.absolutePath, "--stop")
+      }
+      findGradleDistribution()?.let {
+        candidates += listOf("sh", File(it, "bin/gradle").absolutePath, "--stop")
+      }
+      for ((index, command) in candidates.withIndex()) {
+        val exit = runStopCommand(command, projectDir)
+        if (exit == 0 || index == candidates.lastIndex) {
+          break
         }
+        // The wrapper could not run (e.g. missing wrapper jar): fall
+        // through to the downloaded distribution's own gradle binary.
       }
-      if (command == null) {
-        return
-      }
+    } catch (e: Exception) {
+      // Best-effort only: the restart proceeds either way.
+    }
+  }
+
+  /** Runs one daemon-stop command; returns its exit code, or -1. */
+  private fun runStopCommand(command: List<String>, projectDir: File): Int {
+    return try {
       val processBuilder = ProcessBuilder(command)
       processBuilder.directory(projectDir)
       val env = processBuilder.environment()
@@ -304,8 +348,9 @@ object SdkPlatformInstaller {
       try {
         process.outputStream.close()
       } catch (e: Exception) {
-        // No input needed.
+        // No input is needed for --stop.
       }
+      // Output of --stop is a few lines; drain it so the pipe cannot fill.
       Thread {
         try {
           process.inputStream.bufferedReader().use { it.readText() }
@@ -314,11 +359,14 @@ object SdkPlatformInstaller {
         }
       }.apply { isDaemon = true }.start()
       val finished = process.waitFor(60, TimeUnit.SECONDS)
-      if (!finished) {
+      if (finished) {
+        process.exitValue()
+      } else {
         process.destroyForcibly()
+        -1
       }
     } catch (e: Exception) {
-      // Best-effort only.
+      -1
     }
   }
 
@@ -329,7 +377,7 @@ object SdkPlatformInstaller {
       if (!dists.isDirectory) {
         return null
       }
-      dists.walkTopDown().maxDepth(4).firstOrNull {
+      dists.walkTopDown().maxDepth(6).firstOrNull {
         it.isDirectory && File(it, "bin/gradle").isFile
       }
     } catch (e: Exception) {
