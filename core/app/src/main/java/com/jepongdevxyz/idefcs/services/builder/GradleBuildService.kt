@@ -107,7 +107,14 @@ class GradleBuildService : Service(), BuildService, IToolingApiClient,
   private val isGradleWrapperAvailable: Boolean
     get() {
       val projectManager = ProjectManagerImpl.getInstance()
-      val projectDir = projectManager.projectDirPath
+      val projectDir = try {
+        projectManager.projectDirPath
+      } catch (e: Exception) {
+        // No project is open (or it was just closed): that is exactly
+        // the "not available" answer this probe exists to give,
+        // not a crash.
+        return false
+      }
       if (TextUtils.isEmpty(projectDir)) {
         return false
       }

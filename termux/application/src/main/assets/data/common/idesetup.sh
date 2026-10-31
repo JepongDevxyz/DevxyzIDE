@@ -135,16 +135,22 @@ download_and_extract() {
   fi
   if [ "$do_download" = "true" ]; then
     print_info "Downloading $name..."
-    curl -L -o "$dest" "$url" --http1.1
+    # -f: an HTTP error (404/500) must fail the download instead of saving
+    # the error page as the archive; --retry rides out flaky connections.
+    curl -fL --retry 3 --retry-delay 2 -o "$dest" "$url" --http1.1
     print_success "$name has been downloaded."
     echo ""
   fi
-  if [ ! -f "$dest" ]; then
-    print_err "The downloaded file $name does not exist. Cannot proceed..."
+  if [ ! -s "$dest" ]; then
+    print_err "The downloaded file $name does not exist or is empty. Cannot proceed..."
     exit 1
   fi
   print_info "Extracting downloaded archive..."
-  tar xvJf "$dest" && print_info "Extracted successfully"
+  if ! tar xvJf "$dest"; then
+    print_err "Failed to extract $name. The download may be incomplete; re-run the setup and choose to download it again."
+    exit 1
+  fi
+  print_info "Extracted successfully"
   echo ""
   rm -vf "$dest"
   cd -
@@ -157,6 +163,10 @@ download_comp() {
   dname=$4
   print_info "Extracting URL for $nm from manifest..."
   url=$(jq -r "${jq_query}" "$downloaded_manifest")
+  if [ -z "$url" ] || [ "$url" = "null" ]; then
+    print_err "Could not find the download URL for $nm in the manifest. Cannot proceed..."
+    exit 1
+  fi
   print_success "Found URL: $url"
   echo ""
   download_and_extract "$nm" "$url" "$mdir" "$mdir/$dname.tar.xz"
@@ -496,7 +506,11 @@ fi
 # Download the manifest.json file
 print_info "Downloading manifest file..."
 downloaded_manifest="$install_dir/manifest.json"
-curl -L -o "$downloaded_manifest" "$manifest" && print_success "Manifest file downloaded"
+curl -fL --retry 3 -o "$downloaded_manifest" "$manifest" && print_success "Manifest file downloaded"
+if [ ! -s "$downloaded_manifest" ]; then
+  print_err "Failed to download the manifest file. Cannot proceed..."
+  exit 1
+fi
 echo ""
 
 # Install the Android SDK
@@ -543,12 +557,12 @@ else
   fi
 fi
 
-jdk_dir="$SYSROOT/opt/openjdk"
+jdk_dir="${SYSROOT:-$PREFIX}/opt/openjdk"
 
 print_info "Updating ide-environment.properties..."
 print_info "JAVA_HOME=$jdk_dir"
 echo ""
-props_dir="$SYSROOT/etc"
+props_dir="${SYSROOT:-$PREFIX}/etc"
 props="$props_dir/ide-environment.properties"
 
 if [ ! -d "$props_dir" ]; then
@@ -561,7 +575,7 @@ else
   if is_yes "$props file already exists. Would you like to overwrite it?"; then
     printf "JAVA_HOME=%s" "$jdk_dir" >"$props" && print_success "Properties file updated successfully!"
   else
-    print_err "Manually edit $SYSROOT/etc/ide-environment.properties file and set JAVA_HOME and ANDROID_SDK_ROOT."
+    print_err "Manually edit ${SYSROOT:-$PREFIX}/etc/ide-environment.properties file and set JAVA_HOME and ANDROID_SDK_ROOT."
   fi
 fi
 

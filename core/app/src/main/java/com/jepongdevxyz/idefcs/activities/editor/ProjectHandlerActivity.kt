@@ -655,8 +655,10 @@ abstract class ProjectHandlerActivity : BaseEditorActivity() {
 
   private fun initialSetup() {
     val manager = ProjectManagerImpl.getInstance()
-    GeneralPreferences.lastOpenedProject = manager.projectDirPath
     try {
+      // projectDirPath throws when no project path is set; it must stay
+      // inside this try, not above it.
+      GeneralPreferences.lastOpenedProject = manager.projectDirPath
       val workspace = manager.getWorkspace()
       if (workspace == null) {
         log.warn("GradleProject not initialized. Skipping initial setup...")

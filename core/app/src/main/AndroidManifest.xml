@@ -101,7 +101,7 @@
 
     <receiver
       android:enabled="true"
-      android:exported="true"
+      android:exported="false"
       android:name=".services.InstallationResultReceiver"
       tools:ignore="ExportedReceiver">
       <intent-filter>

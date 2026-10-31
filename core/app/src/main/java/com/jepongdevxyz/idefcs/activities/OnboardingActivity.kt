@@ -42,6 +42,7 @@ import com.jepongdevxyz.idefcs.ui.themes.IThemeManager
 import com.jepongdevxyz.idefcs.utils.Environment
 import com.termux.shared.android.PackageUtils
 import com.termux.shared.markdown.MarkdownUtils
+import java.io.File
 import com.termux.shared.termux.TermuxConstants
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
@@ -172,8 +173,30 @@ class OnboardingActivity : AppIntro2() {
   }
 
   private fun checkToolsIsInstalled(): Boolean {
-    return IJdkDistributionProvider.getInstance().installedDistributions.isNotEmpty()
-        && Environment.ANDROID_HOME.exists()
+    if (IJdkDistributionProvider.getInstance().installedDistributions.isEmpty()) {
+      return false
+    }
+    // A setup run can die after creating $HOME/android-sdk but before
+    // every component lands (dropped download, killed process). The SDK
+    // directory merely existing is not "installed": without build-tools,
+    // platform-tools and the command-line tools the first build fails
+    // with no way back to setup, so verify the components the setup
+    // actually installs before treating setup as complete.
+    val sdk = Environment.ANDROID_HOME
+    if (!sdk.exists()) {
+      return false
+    }
+    val buildTools = File(sdk, "build-tools")
+    if (buildTools.listFiles().isNullOrEmpty()) {
+      return false
+    }
+    if (!File(sdk, "platform-tools").exists()) {
+      return false
+    }
+    if (!File(sdk, "cmdline-tools").exists()) {
+      return false
+    }
+    return true
   }
 
   private fun isSetupCompleted(): Boolean {
