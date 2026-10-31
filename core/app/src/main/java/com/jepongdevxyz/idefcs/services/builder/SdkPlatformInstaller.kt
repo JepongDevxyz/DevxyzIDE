@@ -95,6 +95,21 @@ object SdkPlatformInstaller {
               "[DevxyzIDE] Naka-install na ang Android $api platform. " +
                 "Sisimulan ko ulit ang build."
             )
+            // The daemon from the failed build cached the SDK without the
+            // new platform; stop it so the restarted build rescans the SDK.
+            try {
+              val projectPath = try {
+                com.jepongdevxyz.idefcs.projects.IProjectManager.getInstance()
+                  .projectDirPath
+              } catch (e: Exception) {
+                null
+              }
+              if (projectPath != null) {
+                stopGradleDaemons(projectPath)
+              }
+            } catch (e: Exception) {
+              // Best-effort; the restart proceeds either way.
+            }
             service.executeTasks(*taskArray)
           } else {
             service.logOutput(
@@ -250,6 +265,75 @@ object SdkPlatformInstaller {
       }
     } catch (e: Exception) {
       false to (e.message ?: "nagkaroon ng error ang installer")
+    }
+  }
+
+  /**
+   * Stops the Gradle daemon(s) for this IDE's Gradle user home: the
+   * daemon caches the SDK platform list for its whole lifetime, so a
+   * platform installed after the failed build stays invisible to the
+   * restarted build unless the daemon is stopped first. Best-effort.
+   */
+  fun stopGradleDaemons(projectPath: String) {
+    try {
+      val projectDir = File(projectPath)
+      val gradlew = File(projectDir, "gradlew")
+      val command: List<String>? = when {
+        gradlew.isFile -> listOf("sh", gradlew.absolutePath, "--stop")
+        else -> findGradleDistribution()?.let {
+          listOf("sh", File(it, "bin/gradle").absolutePath, "--stop")
+        }
+      }
+      if (command == null) {
+        return
+      }
+      val processBuilder = ProcessBuilder(command)
+      processBuilder.directory(projectDir)
+      val env = processBuilder.environment()
+      env["JAVA_HOME"] = Environment.JAVA_HOME.absolutePath
+      env["ANDROID_HOME"] = Environment.ANDROID_HOME.absolutePath
+      env["ANDROID_SDK_ROOT"] = Environment.ANDROID_HOME.absolutePath
+      env["GRADLE_USER_HOME"] = Environment.GRADLE_USER_HOME.absolutePath
+      env["HOME"] = Environment.HOME.absolutePath
+      env["LD_LIBRARY_PATH"] = Environment.PREFIX.absolutePath + "/lib"
+      env["TMPDIR"] = Environment.TMP_DIR.absolutePath
+      env["PATH"] = Environment.JAVA_HOME.absolutePath + "/bin:" +
+        Environment.BIN_DIR.absolutePath + ":" + (env["PATH"] ?: "/system/bin")
+      processBuilder.redirectErrorStream(true)
+      val process = processBuilder.start()
+      try {
+        process.outputStream.close()
+      } catch (e: Exception) {
+        // No input needed.
+      }
+      Thread {
+        try {
+          process.inputStream.bufferedReader().use { it.readText() }
+        } catch (e: Exception) {
+          // Stream closed.
+        }
+      }.apply { isDaemon = true }.start()
+      val finished = process.waitFor(60, TimeUnit.SECONDS)
+      if (!finished) {
+        process.destroyForcibly()
+      }
+    } catch (e: Exception) {
+      // Best-effort only.
+    }
+  }
+
+  /** Finds an unpacked Gradle distribution in the IDE's Gradle user home. */
+  private fun findGradleDistribution(): File? {
+    return try {
+      val dists = File(Environment.GRADLE_USER_HOME, "wrapper/dists")
+      if (!dists.isDirectory) {
+        return null
+      }
+      dists.walkTopDown().maxDepth(4).firstOrNull {
+        it.isDirectory && File(it, "bin/gradle").isFile
+      }
+    } catch (e: Exception) {
+      null
     }
   }
 
