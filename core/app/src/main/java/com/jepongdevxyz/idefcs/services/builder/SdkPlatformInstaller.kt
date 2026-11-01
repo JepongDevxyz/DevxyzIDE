@@ -18,6 +18,8 @@
 package com.jepongdevxyz.idefcs.services.builder
 
 import com.jepongdevxyz.idefcs.tasks.TaskExecutor
+import com.jepongdevxyz.idefcs.tooling.api.messages.AndroidInitializationParams
+import com.jepongdevxyz.idefcs.tooling.api.messages.InitializeProjectParams
 import com.jepongdevxyz.idefcs.utils.Environment
 import java.io.File
 import java.util.Collections
@@ -96,13 +98,19 @@ object SdkPlatformInstaller {
               "[DevxyzIDE] Naka-install na ang Android $api platform."
             )
             // The daemon from the failed build cached the SDK without the
-            // new platform; stop it so the restarted build rescans the SDK.
-            // stopGradleDaemons() blocks while it waits on the gradle
-            // process (up to a minute), and TaskExecutor delivers this
-            // callback on the UI thread — running it here froze the whole
-            // app (ANR). Stop the daemon on a background thread instead,
-            // then restart the build from that callback (executeTasks is
-            // non-blocking, so it is safe there).
+            // new platform, and the tooling server keeps reusing its Gradle
+            // connection, so the restarted build still cannot see the
+            // platform. Phone-proven in Pro (2026-11-01): an external
+            // gradlew --stop does NOT reset that connection, while a fresh
+            // connection does. So first re-initialize the project with
+            // forceNewConnection — the server drops its connector and
+            // reconnects, spawning a fresh daemon that rescans the SDK.
+            // This blocks (the sync can take minutes), and TaskExecutor
+            // delivers this callback on the UI thread — running it there
+            // froze the whole app (ANR) — so it runs on a background
+            // thread; the daemon stop remains as fallback, and the build
+            // restart itself happens in the completion callback
+            // (executeTasks is non-blocking, so it is safe there).
             TaskExecutor.executeAsync(
               Callable {
                 try {
@@ -113,7 +121,23 @@ object SdkPlatformInstaller {
                     null
                   }
                   if (projectPath != null) {
-                    stopGradleDaemons(projectPath)
+                    var reconnected = false
+                    try {
+                      val params = InitializeProjectParams(
+                        directory = projectPath,
+                        gradleDistribution = gradleDistributionParams,
+                        androidParams = AndroidInitializationParams.DEFAULT,
+                        forceNewConnection = true
+                      )
+                      service.initializeProject(params)
+                        .get(5, TimeUnit.MINUTES)
+                      reconnected = true
+                    } catch (e: Exception) {
+                      reconnected = false
+                    }
+                    if (!reconnected) {
+                      stopGradleDaemons(projectPath)
+                    }
                   }
                 } catch (e: Exception) {
                   // Best-effort; the restart proceeds either way.
